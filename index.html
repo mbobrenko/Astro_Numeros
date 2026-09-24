@@ -1,0 +1,745 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Квадрат Пифагора — тест</title>
+<style>
+  :root{--bg:#faf9f7;--fg:#1f1d1a;--muted:#6b665f;--card:#fff;--line:#e2ded7;--accent:#8a4b2d;--hi:#f3e6dc}
+  @media (prefers-color-scheme:dark){:root{--bg:#191816;--fg:#ece8e1;--muted:#a49e94;--card:#232220;--line:#3a3733;--accent:#e0a17c;--hi:#33271f}}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,"Segoe UI",sans-serif}
+  main{max-width:880px;margin:0 auto;padding:24px 16px 64px}
+  h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:28px 0 10px} .sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .langbar{display:flex;gap:2px;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+  .langbtn{font:inherit;font-size:13px;background:var(--card);color:var(--muted);border:0;padding:6px 12px;cursor:pointer}
+  .langbtn.active{background:var(--accent);color:#fff}
+  form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}
+  input,select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+  button{font:inherit;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;align-self:end}
+  .err{color:#b3261e;margin-top:10px;font-size:14px}
+  .hint{color:var(--muted);margin:8px 0 0;font-size:13px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:480px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+  .grid3 div{padding:18px 8px;text-align:center;font-size:22px;font-weight:600;border:1px solid var(--line);margin:-1px 0 0 -1px;min-height:88px;display:flex;flex-direction:column;justify-content:center}
+  .grid3 small{font-size:11px;font-weight:400;color:var(--muted)}
+  .grid3 .has{background:var(--hi)}
+  table{border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:14px}
+  th,td{padding:6px 12px;border:1px solid var(--line);text-align:center} th:first-child,td:first-child{text-align:left}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:15px} .kv b{font-variant-numeric:tabular-nums}
+  .row{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+  .txt{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 10px}
+  .txt h3{margin:0 0 6px;font-size:15px;color:var(--accent)} .txt p{margin:0 0 8px;font-size:14.5px} .none{color:var(--muted);font-size:14px;font-style:italic}
+  details{margin-top:12px} summary{cursor:pointer;color:var(--muted);font-size:14px}
+  .tabbar{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:24px 0 18px;flex-wrap:wrap}
+  .tabbtn{font:inherit;font-size:15px;background:none;border:0;padding:10px 14px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabbtn:hover{color:var(--fg)}
+  .tabbtn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  .tabpanel{display:none}
+  .tabpanel.active{display:block}
+  .price{font-size:20px;font-weight:700;color:var(--accent)}
+  .legal p{margin:0 0 10px;font-size:14.5px}
+  .legal ol{padding-left:20px;margin:0 0 10px}
+  .legal li{margin:0 0 8px;font-size:14.5px}
+  .plans{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 10px}
+  .plan{flex:1 1 220px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px 20px;position:relative}
+  .plan.hl{border-color:var(--accent)}
+  .plan .badge{position:absolute;top:-11px;right:16px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.02em}
+  .plan h3{margin:0 0 2px;font-size:16px}
+  .plan .plan-price{font-size:26px;font-weight:800;color:var(--accent);margin:6px 0 0}
+  .plan .plan-period{font-size:13px;color:var(--muted);margin:0 0 10px}
+  .plan .plan-desc{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+  .plan .plan-feat-label{font-size:12.5px;color:var(--muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:.02em}
+  .plan ul{margin:0;padding-left:18px;font-size:14.5px}
+  .plan li{margin:0 0 4px}
+  .terms-link{font-size:14.5px}
+  .terms-link a{color:var(--accent);font-weight:600;text-decoration:none}
+  .terms-link a:hover{text-decoration:underline}
+</style>
+</head>
+<body><main>
+<div class="topbar">
+  <div>
+    <h1 id="h1Title">Квадрат Пифагора по дате и ФИО</h1>
+    <p class="sub" id="subText">Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.</p>
+  </div>
+  <div class="langbar" id="langbar">
+    <button type="button" class="langbtn" data-lang="ru">RU</button>
+    <button type="button" class="langbtn" data-lang="en">EN</button>
+  </div>
+</div>
+
+<form id="f">
+  <label><span id="lblSurname">Фамилия</span><input id="s" value="Бобренко" required></label>
+  <label><span id="lblName">Имя</span><input id="n" value="Марина" required></label>
+  <label><span id="lblPatr">Отчество</span><input id="p" value="Николаевна" required></label>
+  <label><span id="lblDate">Дата рождения</span><input id="d" value="22.02.1984" placeholder="ДД.ММ.ГГГГ" required pattern="\d{1,2}\.\d{1,2}\.\d{4}"></label>
+  <button id="btnCalc">Рассчитать</button>
+</form>
+<p class="hint" id="nameHint"></p>
+<div class="err" id="err"></div>
+<div id="out"></div>
+</main>
+<script>
+const GEN_ALL = {
+ "ru": {
+  "square_tier": {
+   "1": {
+    "0": "Единиц нет. Не хватает опоры на собственную волю: решения и первый шаг даются тяжело, человек часто ждёт, чтобы выбор сделал кто-то другой, или медлит с началом дела. Умение хотеть, решать и вести себя самому — не природная данность, а урок, который нужно нарабатывать сознательно.",
+    "1": "Одна единица — воля и самостоятельность присутствуют в обычной, сбалансированной мере. Человек умеет принимать решения и постоять за себя, когда нужно, но не зациклен на первенстве и не рвётся в лидеры любой ценой.",
+    "2": "Две единицы усиливают волю и целеустремлённость: человек уверенно идёт к своему, не любит, когда им командуют, и умеет настоять на своём. Хороший потенциал для самостоятельной работы и лидерства, если не переходит в упрямство.",
+    "3": "Три единицы — воля очень сильная, почти бойцовская: человек привык добиваться своего и плохо переносит чужие указания. Важно учиться слышать других, иначе сила характера превращается в конфликтность.",
+    "4": "Четыре и более единиц — воля становится настолько мощной, что цель важнее средств и окружающих. Человек может быть директивным лидером, способным к быстрому обучению, но склонным идти напролом."
+   },
+   "2": {
+    "0": "Двоек нет. Чувствительность и умение подстраиваться под других не в приоритете: человек более рационален, чем эмоционален, ему проще опираться на факты и логику, чем на настроение. Развивать мягкость, эмпатию и партнёрство — сознательная задача.",
+    "1": "Одна двойка — чувствительность и умение сотрудничать присутствуют в обычной мере. Человек способен договариваться, слышать партнёра и подстраиваться под ситуацию, но не растворяется в чужих переживаниях.",
+    "2": "Две двойки — эмоциональность заметно выше среднего: человек тонко чувствует настроение других, ценит парность и партнёрство, легко считывает атмосферу. Хороший ресурс для отношений и совместной работы, если не превращается в зависимость от чужого мнения.",
+    "3": "Три двойки — потребность чувствовать очень велика, подход к такому человеку работает только через эмоции, не через логику и уговоры. Это делает человека уязвимым и чувствительным к чужому настроению, склонным к тревожности.",
+    "4": "Четыре и более двоек — очень мощное психическое поле, вплоть до экстрасенсорных способностей и целительского дара. Такой человек купается в чувствах, но крайне уязвим и легко поддаётся манипуляции через жалость; защитой служат сопутствующие четвёрки, восьмёрки или семёрки."
+   },
+   "3": {
+    "0": "Троек нет. Лёгкость, юмор и умение получать удовольствие от жизни не даны сами собой: человеку сложнее расслабиться и проявить себя творчески, радость приходится в себе взращивать осознанно.",
+    "1": "Одна тройка даёт лёгкость, обаяние и чувство юмора в обычной мере: человек умеет быть ценителем красоты и позволяет себе иногда быть лёгким, но это не превращается в главную черту характера.",
+    "2": "Две тройки усиливают творческое начало и обаяние: человек легко находит нужные слова, умеет расположить к себе, ему проще, чем другим, превращать любое дело в игру. Хорошая опора для творческих профессий и общения.",
+    "3": "Три тройки — творческая энергия и лёгкость на грани избытка: человек обаятелен, артистичен, полон идей, но ему трудно удерживать фокус и доводить дело до конца, слишком многое отвлекает и увлекает.",
+    "4": "Четыре и более троек — творчество, эмоции и энергия бьют через край. Такому человеку сложно оставаться серьёзным и последовательным, он разбрасывается, но при этом способен заражать окружающих оптимизмом и вдохновением, как никто другой."
+   },
+   "4": {
+    "0": "Четвёрок нет. Опоры на порядок, режим и системный труд не хватает: планирование и рутина даются тяжело, человеку проще действовать по вдохновению, чем по плану. Дисциплину и умение доводить дело до конца приходится нарабатывать специально.",
+    "1": "Одна четвёрка — трудолюбие и организованность присутствуют в обычной мере. Человек способен работать методично и доводить начатое до конца, но не превращает порядок в самоцель.",
+    "2": "Две четвёрки — практичность и работоспособность выражены ярко: такой человек надёжен, хорошо справляется с рутиной, умеет копить опыт и учиться на нём. Хорошая опора для любой систематической работы.",
+    "3": "Три четвёрки — упорство и практичность очень сильны, человек стремится к результату и не сдаётся, но легко становится негибким и придирчивым к деталям, тяжело переносит чужие ошибки.",
+    "4": "Четыре и более четвёрок — упрямство почти несгибаемое: даже осознав, что путь неверный, такой человек будет двигаться дальше по инерции. Внутренние противоречия ему самому незаметны, видны только со стороны; в избытке даёт склонность к депрессии и одиночеству, помешанность на порядке и защите."
+   },
+   "5": {
+    "0": "Пятёрок нет. Это отсутствие внутренней опоры и интереса к жизни: даже при внешнем благополучии человек не чувствует любопытства, устойчивости и «стержня», ему трудно найти то, что по-настоящему увлекает. Развивать вкус к жизни и способность меняться — осознанная задача.",
+    "1": "Одна пятёрка даёт интерес и любопытство к жизни в обычной мере: у человека есть к чему стремиться, он способен развиваться и меняться, но не живёт вечной погоней за новизной.",
+    "2": "Две пятёрки — любопытство и тяга к переменам выражены ярко: человеку интересно многое, он легко адаптируется к новому, любит путешествия и движение. Хорошая основа для развития и постоянного обучения.",
+    "3": "Три пятёрки — жажда свободы и перемен очень сильна: человеку тяжело усидеть на месте, он легко бросает начатое ради нового, склонен к авантюрам и переменчивости в решениях и отношениях.",
+    "4": "Четыре и более пятёрок — свобода становится почти навязчивой потребностью: любые рамки, обязательства и рутина воспринимаются как угроза. Такой человек живёт очень насыщенно, но ему трудно строить что-то долгосрочное без риска всё бросить."
+   },
+   "6": {
+    "0": "Шестёрок нет. Чувство дома, заботы и ответственности за близких не дано от рождения: семейные и бытовые обязанности воспринимаются как тяжесть, а не естественная часть жизни. Учиться заботиться о других и о своём быте — осознанный урок.",
+    "1": "Одна шестёрка даёт скромность, спокойствие и чувство семьи в обычной мере: человек умеет красиво выходить из тяжёлых ситуаций и поддерживать отношения с роднёй, но не растворяется полностью в заботе о других.",
+    "2": "Две шестёрки — чувство семьи и ответственности выражено ярко: человек умеет заботиться о близких, ценит уют и гармонию, ему важно, чтобы рядом всё было хорошо. Хорошая опора для семьи и любой заботливой профессии.",
+    "3": "Три шестёрки — ответственность и забота о других настолько сильны, что человек берёт на себя слишком много чужих проблем, ему трудно отказать и сказать «нет», в ущерб себе.",
+    "4": "Четыре и более шестёрок — гиперответственность: человек буквально не может не заботиться обо всех вокруг, часто в ущерб личным границам и собственным потребностям. Со стороны это выглядит как самоотверженность, но внутри копится усталость."
+   },
+   "7": {
+    "0": "Семёрок нет. Аналитический склад ума и интерес к глубоким смыслам не в приоритете: человек больше действует, чем размышляет, ему проще опираться на опыт других, чем докапываться до сути самому. Развивать наблюдательность и умение анализировать — осознанная задача.",
+    "1": "Одна семёрка — аналитичность и интуиция присутствуют в обычной мере. Человек умеет анализировать ситуацию и прислушиваться к внутреннему голосу, но не замыкается в себе.",
+    "2": "Две семёрки — интеллект, гибкость ума и уравновешенность выражены ярко: человек умеет быть внимательным и сосредоточенным, вызывает уважение своей сдержанностью. Не стоит лишний раз подчёркивать свой ум — окружающим комфортнее, когда его иногда ждут, а не боятся.",
+    "3": "Три семёрки — глубокий, но тяжёлый ум: человек склонен к самоанализу и одиночеству, ему трудно довериться и открыться, часто уходит в себя вместо того, чтобы разобраться в отношениях напрямую.",
+    "4": "Четыре и более семёрок — избыток анализа переходит в самоедство: человек постоянно копается в себе, склонен винить себя, терпит до последнего вместо того, чтобы действовать. Нужен постоянный выход эмоций и общение, иначе накапливается замкнутость."
+   },
+   "8": {
+    "0": "Восьмёрок нет. Это самая уязвимая позиция для материального благополучия: даже при уме и таланте деньги и власть не приходят легко, приходится нарабатывать деловую хватку и уверенность в себе специально, а не полагаться на природную данность.",
+    "1": "Одна восьмёрка даёт уверенность в себе и деловую хватку в обычной мере: человек умеет распоряжаться ресурсами и понимает, как правильно поступать в вопросах денег и статуса, без одержимости этой темой.",
+    "2": "Две восьмёрки — деловая хватка и организаторские способности выражены ярко: человек умеет распоряжаться ресурсами, ставить цели и добиваться материального результата. Хорошая опора для бизнеса и управления.",
+    "3": "Три восьмёрки — амбиции и тяга к власти очень сильны: человек стремится контролировать ситуацию и ресурсы вокруг себя, но легко становится жёстким и нетерпимым к чужой слабости.",
+    "4": "Четыре и более восьмёрок — власть и деньги становятся навязчивой темой: успех важен почти болезненно, а неудачи в этой сфере переживаются очень тяжело. Такой человек способен на многое в бизнесе, но рискует мерить себя и других только результатом."
+   },
+   "9": {
+    "0": "Девяток нет. Отсутствие девятки — это ограниченность: человеку не очень доступны абстрактное мышление, сострадание без выгоды, забота о чём-то большем, чем он сам. Учиться быть «бескорыстно добрым» — сознательный урок для этого числа.",
+    "1": "Одна девятка даёт сострадание и широту взглядов в обычной мере: человек способен на бескорыстную доброту и понимание чужого, без зацикленности на спасении всего мира.",
+    "2": "Две девятки — сострадание и широта взглядов выражены ярко: человек легко сопереживает, склонен помогать и видеть общую картину, а не только свою выгоду. Хорошая опора для любой работы с людьми.",
+    "3": "Три девятки — идеализм и тяга помогать другим очень сильны, вплоть до того, что человек забывает о собственных интересах и границах ради чужих проблем.",
+    "4": "Четыре и более девяток — сострадание становится всепоглощающим: человек постоянно чувствует ответственность за весь мир, ему трудно отказаться от чужих проблем и просто пожить для себя, даже когда это необходимо."
+   }
+  },
+  "role": {
+   "day": {
+    "1": "Число дня рождения 1 — врождённый талант, то, что даётся легко, «с рождения»: воля, лидерство, самостоятельность, умение решать и вести за собой. Обратная сторона этого дара — упрямство, эгоцентризм, нетерпимость к чужому мнению.",
+    "2": "Число дня рождения 2 — врождённый талант, то, что даётся легко, «с рождения»: чувствительность, дипломатичность, умение сотрудничать и подстраиваться. Обратная сторона этого дара — тревожность, зависимость от чужого настроения, нерешительность.",
+    "3": "Число дня рождения 3 — врождённый талант, то, что даётся легко, «с рождения»: творчество, самовыражение, общительность, лёгкость, чувство юмора. Обратная сторона этого дара — разбросанность, поверхностность, уход от ответственности.",
+    "4": "Число дня рождения 4 — врождённый талант, то, что даётся легко, «с рождения»: порядок, труд, дисциплина, надёжность, умение доводить дело до конца. Обратная сторона этого дара — упрямство, негибкость, занудство, скупость.",
+    "5": "Число дня рождения 5 — врождённый талант, то, что даётся легко, «с рождения»: свобода, перемены, любознательность, адаптивность, тяга к движению. Обратная сторона этого дара — непостоянство, безответственность, склонность к авантюрам.",
+    "6": "Число дня рождения 6 — врождённый талант, то, что даётся легко, «с рождения»: ответственность, забота о близких, чувство дома и гармонии. Обратная сторона этого дара — самопожертвование в ущерб себе, навязчивая опека.",
+    "7": "Число дня рождения 7 — врождённый талант, то, что даётся легко, «с рождения»: анализ, интуиция, склонность к уединению и поиску смысла. Обратная сторона этого дара — замкнутость, самоедство, недоверие к людям.",
+    "8": "Число дня рождения 8 — врождённый талант, то, что даётся легко, «с рождения»: организаторские способности, деловая хватка, тяга к власти и материальному результату. Обратная сторона этого дара — жёсткость, помешанность на статусе и деньгах.",
+    "9": "Число дня рождения 9 — врождённый талант, то, что даётся легко, «с рождения»: сострадание, широта взглядов, гуманизм, умение отдавать. Обратная сторона этого дара — жертвенность, потеря себя в чужих проблемах, идеализм без практичности."
+   },
+   "lesson": {
+    "1": "Жизненный урок — 1. Это то, чему человек должен научиться и через что раскрыться по жизни: воля, лидерство, самостоятельность, умение решать и вести за собой. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — упрямство, эгоцентризм, нетерпимость к чужому мнению.",
+    "2": "Жизненный урок — 2. Это то, чему человек должен научиться и через что раскрыться по жизни: чувствительность, дипломатичность, умение сотрудничать и подстраиваться. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — тревожность, зависимость от чужого настроения, нерешительность.",
+    "3": "Жизненный урок — 3. Это то, чему человек должен научиться и через что раскрыться по жизни: творчество, самовыражение, общительность, лёгкость, чувство юмора. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — разбросанность, поверхностность, уход от ответственности.",
+    "4": "Жизненный урок — 4. Это то, чему человек должен научиться и через что раскрыться по жизни: порядок, труд, дисциплина, надёжность, умение доводить дело до конца. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — упрямство, негибкость, занудство, скупость.",
+    "5": "Жизненный урок — 5. Это то, чему человек должен научиться и через что раскрыться по жизни: свобода, перемены, любознательность, адаптивность, тяга к движению. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — непостоянство, безответственность, склонность к авантюрам.",
+    "6": "Жизненный урок — 6. Это то, чему человек должен научиться и через что раскрыться по жизни: ответственность, забота о близких, чувство дома и гармонии. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — самопожертвование в ущерб себе, навязчивая опека.",
+    "7": "Жизненный урок — 7. Это то, чему человек должен научиться и через что раскрыться по жизни: анализ, интуиция, склонность к уединению и поиску смысла. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — замкнутость, самоедство, недоверие к людям.",
+    "8": "Жизненный урок — 8. Это то, чему человек должен научиться и через что раскрыться по жизни: организаторские способности, деловая хватка, тяга к власти и материальному результату. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — жёсткость, помешанность на статусе и деньгах.",
+    "9": "Жизненный урок — 9. Это то, чему человек должен научиться и через что раскрыться по жизни: сострадание, широта взглядов, гуманизм, умение отдавать. Если жить не в ладах с этим числом, теряются силы; если в ладах — приходит удача. Обратная сторона, которую стоит держать под контролем, — жертвенность, потеря себя в чужих проблемах, идеализм без практичности."
+   },
+   "soul": {
+    "1": "Число Душевного Побуждения 1 — то, что по-настоящему радует и наполняет изнутри: воля, лидерство, самостоятельность, умение решать и вести за собой. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "2": "Число Душевного Побуждения 2 — то, что по-настоящему радует и наполняет изнутри: чувствительность, дипломатичность, умение сотрудничать и подстраиваться. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "3": "Число Душевного Побуждения 3 — то, что по-настоящему радует и наполняет изнутри: творчество, самовыражение, общительность, лёгкость, чувство юмора. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "4": "Число Душевного Побуждения 4 — то, что по-настоящему радует и наполняет изнутри: порядок, труд, дисциплина, надёжность, умение доводить дело до конца. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "5": "Число Душевного Побуждения 5 — то, что по-настоящему радует и наполняет изнутри: свобода, перемены, любознательность, адаптивность, тяга к движению. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "6": "Число Душевного Побуждения 6 — то, что по-настоящему радует и наполняет изнутри: ответственность, забота о близких, чувство дома и гармонии. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "7": "Число Душевного Побуждения 7 — то, что по-настоящему радует и наполняет изнутри: анализ, интуиция, склонность к уединению и поиску смысла. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "8": "Число Душевного Побуждения 8 — то, что по-настоящему радует и наполняет изнутри: организаторские способности, деловая хватка, тяга к власти и материальному результату. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "9": "Число Душевного Побуждения 9 — то, что по-настоящему радует и наполняет изнутри: сострадание, широта взглядов, гуманизм, умение отдавать. Человек внутренне стремится к этому, даже если внешне это не всегда заметно.",
+    "11": "Число Душевного Побуждения 11 — мастер-число, «усиленная двойка»: та же чувствительность и потребность в партнёрстве, но на более высоком, почти провидческом уровне — интуиция, вдохновение, способность вести за собой через чувства. Такое число требует бережного обращения — иначе оборачивается тревожностью и нервным истощением.",
+    "22": "Число Душевного Побуждения 22 — мастер-число, «усиленная четвёрка», «мастер-строитель»: та же практичность и труд, но в масштабе способности воплощать крупные, значимые проекты. Это большая ответственность и большой потенциал одновременно, который легко потерять, если распыляться на мелочи."
+   },
+   "personality": {
+    "1": "Число Личности 1 — то, каким человека видят со стороны, первое впечатление о нём: воля, лидерство, самостоятельность, умение решать и вести за собой, иногда с оттенком упрямство, эгоцентризм, нетерпимость к чужому мнению.",
+    "2": "Число Личности 2 — то, каким человека видят со стороны, первое впечатление о нём: чувствительность, дипломатичность, умение сотрудничать и подстраиваться, иногда с оттенком тревожность, зависимость от чужого настроения, нерешительность.",
+    "3": "Число Личности 3 — то, каким человека видят со стороны, первое впечатление о нём: творчество, самовыражение, общительность, лёгкость, чувство юмора, иногда с оттенком разбросанность, поверхностность, уход от ответственности.",
+    "4": "Число Личности 4 — то, каким человека видят со стороны, первое впечатление о нём: порядок, труд, дисциплина, надёжность, умение доводить дело до конца, иногда с оттенком упрямство, негибкость, занудство, скупость.",
+    "5": "Число Личности 5 — то, каким человека видят со стороны, первое впечатление о нём: свобода, перемены, любознательность, адаптивность, тяга к движению, иногда с оттенком непостоянство, безответственность, склонность к авантюрам.",
+    "6": "Число Личности 6 — то, каким человека видят со стороны, первое впечатление о нём: ответственность, забота о близких, чувство дома и гармонии, иногда с оттенком самопожертвование в ущерб себе, навязчивая опека.",
+    "7": "Число Личности 7 — то, каким человека видят со стороны, первое впечатление о нём: анализ, интуиция, склонность к уединению и поиску смысла, иногда с оттенком замкнутость, самоедство, недоверие к людям.",
+    "8": "Число Личности 8 — то, каким человека видят со стороны, первое впечатление о нём: организаторские способности, деловая хватка, тяга к власти и материальному результату, иногда с оттенком жёсткость, помешанность на статусе и деньгах.",
+    "9": "Число Личности 9 — то, каким человека видят со стороны, первое впечатление о нём: сострадание, широта взглядов, гуманизм, умение отдавать, иногда с оттенком жертвенность, потеря себя в чужих проблемах, идеализм без практичности.",
+    "11": "Число Личности 11 — мастер-число, «усиленная двойка»: та же чувствительность и потребность в партнёрстве, но на более высоком, почти провидческом уровне — интуиция, вдохновение, способность вести за собой через чувства. Такое число требует бережного обращения — иначе оборачивается тревожностью и нервным истощением.",
+    "22": "Число Личности 22 — мастер-число, «усиленная четвёрка», «мастер-строитель»: та же практичность и труд, но в масштабе способности воплощать крупные, значимые проекты. Это большая ответственность и большой потенциал одновременно, который легко потерять, если распыляться на мелочи."
+   },
+   "destiny": {
+    "1": "Число Судьбы 1 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне воля, лидерство, самостоятельность, умение решать и вести за собой, учась не скатываться в упрямство, эгоцентризм, нетерпимость к чужому мнению.",
+    "2": "Число Судьбы 2 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне чувствительность, дипломатичность, умение сотрудничать и подстраиваться, учась не скатываться в тревожность, зависимость от чужого настроения, нерешительность.",
+    "3": "Число Судьбы 3 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне творчество, самовыражение, общительность, лёгкость, чувство юмора, учась не скатываться в разбросанность, поверхностность, уход от ответственности.",
+    "4": "Число Судьбы 4 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне порядок, труд, дисциплина, надёжность, умение доводить дело до конца, учась не скатываться в упрямство, негибкость, занудство, скупость.",
+    "5": "Число Судьбы 5 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне свобода, перемены, любознательность, адаптивность, тяга к движению, учась не скатываться в непостоянство, безответственность, склонность к авантюрам.",
+    "6": "Число Судьбы 6 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне ответственность, забота о близких, чувство дома и гармонии, учась не скатываться в самопожертвование в ущерб себе, навязчивая опека.",
+    "7": "Число Судьбы 7 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне анализ, интуиция, склонность к уединению и поиску смысла, учась не скатываться в замкнутость, самоедство, недоверие к людям.",
+    "8": "Число Судьбы 8 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне организаторские способности, деловая хватка, тяга к власти и материальному результату, учась не скатываться в жёсткость, помешанность на статусе и деньгах.",
+    "9": "Число Судьбы 9 — жизненная задача и путь реализации: человеку предстоит развивать и проявлять вовне сострадание, широта взглядов, гуманизм, умение отдавать, учась не скатываться в жертвенность, потеря себя в чужих проблемах, идеализм без практичности.",
+    "11": "Число Судьбы 11 — мастер-число, «усиленная двойка»: та же чувствительность и потребность в партнёрстве, но на более высоком, почти провидческом уровне — интуиция, вдохновение, способность вести за собой через чувства. Такое число требует бережного обращения — иначе оборачивается тревожностью и нервным истощением.",
+    "22": "Число Судьбы 22 — мастер-число, «усиленная четвёрка», «мастер-строитель»: та же практичность и труд, но в масштабе способности воплощать крупные, значимые проекты. Это большая ответственность и большой потенциал одновременно, который легко потерять, если распыляться на мелочи."
+   }
+  }
+ },
+ "en": {
+  "square_tier": {
+   "1": {
+    "0": "No 1s. There's a lack of reliance on one's own will: decisions and the first step come hard, and the person often waits for someone else to choose, or delays starting things. The ability to want, decide, and lead yourself isn't a natural given here — it's a lesson to be built consciously.",
+    "1": "One 1 — will and independence are present in an ordinary, balanced measure. The person can make decisions and stand up for themselves when needed, but isn't fixated on being first or driven to lead at any cost.",
+    "2": "Two 1s strengthen will and drive: the person confidently pursues their own path, dislikes being ordered around, and knows how to hold their ground. Good potential for independent work and leadership, as long as it doesn't slide into stubbornness.",
+    "3": "Three 1s — the will is very strong, almost combative: the person is used to getting their way and tolerates instructions from others poorly. It's important to learn to listen to others, or strength of character turns into constant conflict.",
+    "4": "Four or more 1s — the will becomes so powerful that the goal matters more than the means or the people around. Such a person can be a directive leader, capable of learning fast, but prone to pushing straight through obstacles."
+   },
+   "2": {
+    "0": "No 2s. Sensitivity and the ability to adapt to others aren't a priority: the person is more rational than emotional, finding it easier to rely on facts and logic than on mood. Developing softness, empathy, and partnership is a conscious task.",
+    "1": "One 2 — sensitivity and the ability to cooperate are present in an ordinary measure. The person can negotiate, hear a partner, and adjust to a situation, without dissolving into other people's feelings.",
+    "2": "Two 2s — emotionality is noticeably above average: the person keenly senses others' moods, values pairing and partnership, and reads the atmosphere easily. A good resource for relationships and teamwork, as long as it doesn't turn into dependence on others' opinions.",
+    "3": "Three 2s — the need to feel is very strong; the only way to reach such a person is through emotion, not logic or persuasion. This makes the person vulnerable and sensitive to others' moods, prone to anxiety.",
+    "4": "Four or more 2s — an extremely strong psychic field, up to and including extrasensory abilities and a gift for healing. Such a person is immersed in feelings but highly vulnerable and easily manipulated through pity; accompanying 4s, 8s, or 7s serve as protection."
+   },
+   "3": {
+    "0": "No 3s. Lightness, humor, and the ability to enjoy life aren't given automatically: it's harder for the person to relax and express themselves creatively — joy has to be consciously cultivated.",
+    "1": "One 3 gives lightness, charm, and a sense of humor in an ordinary measure: the person can appreciate beauty and occasionally allow themselves to be light-hearted, but it doesn't become the defining trait of their character.",
+    "2": "Two 3s strengthen the creative streak and charm: the person easily finds the right words, knows how to win people over, and turns almost any task into a game more easily than others. A good foundation for creative professions and communication.",
+    "3": "Three 3s — creative energy and lightness border on excess: the person is charming, artistic, full of ideas, but struggles to stay focused and finish what they start — too much distracts and carries them away.",
+    "4": "Four or more 3s — creativity, emotion, and energy overflow. Such a person finds it hard to stay serious and consistent, scatters their efforts, but is unmatched at infecting those around them with optimism and inspiration."
+   },
+   "4": {
+    "0": "No 4s. There's not enough grounding in order, routine, and systematic work: planning and routine are hard, and the person finds it easier to act on inspiration than on a plan. Discipline and the ability to see things through have to be specially developed.",
+    "1": "One 4 — diligence and organization are present in an ordinary measure. The person can work methodically and finish what they start, without turning order into an end in itself.",
+    "2": "Two 4s — practicality and capacity for work are pronounced: such a person is reliable, handles routine well, and knows how to accumulate and learn from experience. A good foundation for any systematic work.",
+    "3": "Three 4s — persistence and practicality are very strong; the person pushes for results and doesn't give up, but easily becomes rigid and nitpicky about details, finding it hard to tolerate others' mistakes.",
+    "4": "Four or more 4s — stubbornness that's almost unbendable: even after realizing the path is wrong, such a person keeps moving forward out of inertia. Their own inner contradictions are invisible to them, though obvious from the outside; in excess this brings a tendency to depression and isolation, and an obsession with order and protection."
+   },
+   "5": {
+    "0": "No 5s. This is a lack of inner grounding and interest in life: even amid outward wellbeing, the person feels no curiosity, stability, or inner 'core,' and struggles to find what truly engages them. Cultivating a taste for life and the capacity to change is a conscious task.",
+    "1": "One 5 gives curiosity and interest in life in an ordinary measure: the person has things to strive for and can develop and change, but doesn't live in an endless chase for novelty.",
+    "2": "Two 5s — curiosity and a pull toward change are pronounced: the person finds many things interesting, adapts easily to the new, and loves travel and movement. A good basis for development and continuous learning.",
+    "3": "Three 5s — the thirst for freedom and change is very strong: the person finds it hard to sit still, easily drops what they've started for something new, and is prone to adventures and changeability in decisions and relationships.",
+    "4": "Four or more 5s — freedom becomes an almost obsessive need: any framework, obligation, or routine feels like a threat. Such a person lives very intensely, but finds it hard to build anything long-term without risking dropping it all."
+   },
+   "6": {
+    "0": "No 6s. A sense of home, care, and responsibility for loved ones isn't given at birth: family and household duties are felt as a burden rather than a natural part of life. Learning to care for others and for one's own home is a conscious lesson.",
+    "1": "One 6 gives modesty, calm, and a sense of family in an ordinary measure: the person knows how to gracefully get through difficult situations and maintain relationships with relatives, without dissolving fully into caring for others.",
+    "2": "Two 6s — a sense of family and responsibility is pronounced: the person knows how to care for loved ones, values comfort and harmony, and cares that things around them are well. A good foundation for family life and any caregiving profession.",
+    "3": "Three 6s — responsibility and care for others are so strong that the person takes on too many other people's problems, finds it hard to say no, at their own expense.",
+    "4": "Four or more 6s — hyper-responsibility: the person literally cannot help caring for everyone around them, often at the expense of personal boundaries and their own needs. From the outside it looks like selflessness, but fatigue builds up inside."
+   },
+   "7": {
+    "0": "No 7s. An analytical mindset and interest in deep meaning aren't a priority: the person acts more than they reflect, finding it easier to rely on others' experience than to dig for the truth themselves. Developing observation and analytical skill is a conscious task.",
+    "1": "One 7 — analytical thinking and intuition are present in an ordinary measure. The person can analyze a situation and listen to their inner voice, without withdrawing into themselves.",
+    "2": "Two 7s — intellect, mental flexibility, and composure are pronounced: the person is attentive and focused, and earns respect through restraint. It's best not to overplay one's intelligence — others are more comfortable when they occasionally have to wait for such a person, rather than fear them.",
+    "3": "Three 7s — a deep but heavy mind: the person is prone to self-analysis and solitude, finds it hard to trust and open up, and often withdraws into themselves instead of working through relationships directly.",
+    "4": "Four or more 7s — excess analysis turns into self-torment: the person constantly picks themselves apart, tends to blame themselves, and endures rather than acts. A constant outlet for emotions and regular communication are needed, or isolation accumulates."
+   },
+   "8": {
+    "0": "No 8s. This is the most vulnerable position for material wellbeing: even with intelligence and talent, money and power don't come easily — business sense and self-confidence have to be specially built rather than relied on as a natural given.",
+    "1": "One 8 gives self-confidence and business sense in an ordinary measure: the person knows how to manage resources and understands how to handle matters of money and status, without being obsessed with the topic.",
+    "2": "Two 8s — business acumen and organizational ability are pronounced: the person knows how to manage resources, set goals, and achieve material results. A good foundation for business and management.",
+    "3": "Three 8s — ambition and a drive for power are very strong: the person seeks to control the situation and resources around them, but easily becomes hard-edged and intolerant of others' weakness.",
+    "4": "Four or more 8s — power and money become an obsessive theme: success matters almost painfully, and failures in this area are felt very heavily. Such a person is capable of a great deal in business, but risks measuring themselves and others only by results."
+   },
+   "9": {
+    "0": "No 9s. The absence of a 9 is a kind of limitation: abstract thinking, compassion without self-interest, and care for something larger than oneself aren't easily accessible to the person. Learning to be 'selflessly kind' is a conscious lesson for this number.",
+    "1": "One 9 gives compassion and breadth of outlook in an ordinary measure: the person is capable of selfless kindness and understanding of others, without becoming fixated on saving the whole world.",
+    "2": "Two 9s — compassion and breadth of outlook are pronounced: the person empathizes easily, tends to help, and sees the bigger picture rather than only their own gain. A good foundation for any work with people.",
+    "3": "Three 9s — idealism and the drive to help others are very strong, to the point that the person forgets their own interests and boundaries for the sake of others' problems.",
+    "4": "Four or more 9s — compassion becomes all-consuming: the person constantly feels responsible for the whole world, finds it hard to let go of others' problems and simply live for themselves, even when that's necessary."
+   }
+  },
+  "role": {
+   "day": {
+    "1": "The Day of Birth Number 1 is an innate talent — something that comes easily, 'from birth': will, leadership, independence, the ability to decide and lead others. The flip side of this gift is stubbornness, self-centeredness, intolerance of others' opinions.",
+    "2": "The Day of Birth Number 2 is an innate talent — something that comes easily, 'from birth': sensitivity, diplomacy, the ability to cooperate and adapt. The flip side of this gift is anxiety, dependence on others' moods, indecisiveness.",
+    "3": "The Day of Birth Number 3 is an innate talent — something that comes easily, 'from birth': creativity, self-expression, sociability, lightness, a sense of humor. The flip side of this gift is scatteredness, superficiality, avoiding responsibility.",
+    "4": "The Day of Birth Number 4 is an innate talent — something that comes easily, 'from birth': order, hard work, discipline, reliability, the ability to see things through. The flip side of this gift is stubbornness, inflexibility, fussiness, stinginess.",
+    "5": "The Day of Birth Number 5 is an innate talent — something that comes easily, 'from birth': freedom, change, curiosity, adaptability, a pull toward movement. The flip side of this gift is inconstancy, irresponsibility, a tendency toward risky ventures.",
+    "6": "The Day of Birth Number 6 is an innate talent — something that comes easily, 'from birth': responsibility, care for loved ones, a sense of home and harmony. The flip side of this gift is self-sacrifice at one's own expense, intrusive overprotection.",
+    "7": "The Day of Birth Number 7 is an innate talent — something that comes easily, 'from birth': analysis, intuition, a tendency toward solitude and the search for meaning. The flip side of this gift is withdrawal, self-recrimination, distrust of people.",
+    "8": "The Day of Birth Number 8 is an innate talent — something that comes easily, 'from birth': organizational ability, business acumen, a drive for power and tangible results. The flip side of this gift is harshness, an obsession with status and money.",
+    "9": "The Day of Birth Number 9 is an innate talent — something that comes easily, 'from birth': compassion, breadth of view, humanism, the ability to give. The flip side of this gift is self-sacrifice, losing oneself in others' problems, idealism without practicality."
+   },
+   "lesson": {
+    "1": "The Life Lesson is 1. This is what the person must learn and grow through in life: will, leadership, independence, the ability to decide and lead others. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is stubbornness, self-centeredness, intolerance of others' opinions.",
+    "2": "The Life Lesson is 2. This is what the person must learn and grow through in life: sensitivity, diplomacy, the ability to cooperate and adapt. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is anxiety, dependence on others' moods, indecisiveness.",
+    "3": "The Life Lesson is 3. This is what the person must learn and grow through in life: creativity, self-expression, sociability, lightness, a sense of humor. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is scatteredness, superficiality, avoiding responsibility.",
+    "4": "The Life Lesson is 4. This is what the person must learn and grow through in life: order, hard work, discipline, reliability, the ability to see things through. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is stubbornness, inflexibility, fussiness, stinginess.",
+    "5": "The Life Lesson is 5. This is what the person must learn and grow through in life: freedom, change, curiosity, adaptability, a pull toward movement. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is inconstancy, irresponsibility, a tendency toward risky ventures.",
+    "6": "The Life Lesson is 6. This is what the person must learn and grow through in life: responsibility, care for loved ones, a sense of home and harmony. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is self-sacrifice at one's own expense, intrusive overprotection.",
+    "7": "The Life Lesson is 7. This is what the person must learn and grow through in life: analysis, intuition, a tendency toward solitude and the search for meaning. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is withdrawal, self-recrimination, distrust of people.",
+    "8": "The Life Lesson is 8. This is what the person must learn and grow through in life: organizational ability, business acumen, a drive for power and tangible results. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is harshness, an obsession with status and money.",
+    "9": "The Life Lesson is 9. This is what the person must learn and grow through in life: compassion, breadth of view, humanism, the ability to give. Living out of step with this number drains energy; living in step with it brings good fortune. The flip side to keep in check is self-sacrifice, losing oneself in others' problems, idealism without practicality."
+   },
+   "soul": {
+    "1": "The Soul Urge Number 1 is what truly brings joy and fulfillment from within: will, leadership, independence, the ability to decide and lead others. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "2": "The Soul Urge Number 2 is what truly brings joy and fulfillment from within: sensitivity, diplomacy, the ability to cooperate and adapt. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "3": "The Soul Urge Number 3 is what truly brings joy and fulfillment from within: creativity, self-expression, sociability, lightness, a sense of humor. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "4": "The Soul Urge Number 4 is what truly brings joy and fulfillment from within: order, hard work, discipline, reliability, the ability to see things through. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "5": "The Soul Urge Number 5 is what truly brings joy and fulfillment from within: freedom, change, curiosity, adaptability, a pull toward movement. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "6": "The Soul Urge Number 6 is what truly brings joy and fulfillment from within: responsibility, care for loved ones, a sense of home and harmony. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "7": "The Soul Urge Number 7 is what truly brings joy and fulfillment from within: analysis, intuition, a tendency toward solitude and the search for meaning. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "8": "The Soul Urge Number 8 is what truly brings joy and fulfillment from within: organizational ability, business acumen, a drive for power and tangible results. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "9": "The Soul Urge Number 9 is what truly brings joy and fulfillment from within: compassion, breadth of view, humanism, the ability to give. The person is inwardly drawn to this, even when it isn't always visible on the outside.",
+    "11": "Soul Urge Number 11 — a master number, an 'amplified 2': the same sensitivity and need for partnership, but on a higher, almost visionary level — intuition, inspiration, the ability to lead through feeling. This number demands careful handling, or it turns into anxiety and nervous exhaustion.",
+    "22": "Soul Urge Number 22 — a master number, an 'amplified 4,' the 'master builder': the same practicality and hard work, but at the scale of an ability to realize large, significant projects. This is both a great responsibility and a great potential at once, easily lost if scattered on small things."
+   },
+   "personality": {
+    "1": "The Personality Number 1 is how the person is seen from the outside, the first impression they make: will, leadership, independence, the ability to decide and lead others, sometimes tinged with stubbornness, self-centeredness, intolerance of others' opinions.",
+    "2": "The Personality Number 2 is how the person is seen from the outside, the first impression they make: sensitivity, diplomacy, the ability to cooperate and adapt, sometimes tinged with anxiety, dependence on others' moods, indecisiveness.",
+    "3": "The Personality Number 3 is how the person is seen from the outside, the first impression they make: creativity, self-expression, sociability, lightness, a sense of humor, sometimes tinged with scatteredness, superficiality, avoiding responsibility.",
+    "4": "The Personality Number 4 is how the person is seen from the outside, the first impression they make: order, hard work, discipline, reliability, the ability to see things through, sometimes tinged with stubbornness, inflexibility, fussiness, stinginess.",
+    "5": "The Personality Number 5 is how the person is seen from the outside, the first impression they make: freedom, change, curiosity, adaptability, a pull toward movement, sometimes tinged with inconstancy, irresponsibility, a tendency toward risky ventures.",
+    "6": "The Personality Number 6 is how the person is seen from the outside, the first impression they make: responsibility, care for loved ones, a sense of home and harmony, sometimes tinged with self-sacrifice at one's own expense, intrusive overprotection.",
+    "7": "The Personality Number 7 is how the person is seen from the outside, the first impression they make: analysis, intuition, a tendency toward solitude and the search for meaning, sometimes tinged with withdrawal, self-recrimination, distrust of people.",
+    "8": "The Personality Number 8 is how the person is seen from the outside, the first impression they make: organizational ability, business acumen, a drive for power and tangible results, sometimes tinged with harshness, an obsession with status and money.",
+    "9": "The Personality Number 9 is how the person is seen from the outside, the first impression they make: compassion, breadth of view, humanism, the ability to give, sometimes tinged with self-sacrifice, losing oneself in others' problems, idealism without practicality.",
+    "11": "Personality Number 11 — a master number, an 'amplified 2': the same sensitivity and need for partnership, but on a higher, almost visionary level — intuition, inspiration, the ability to lead through feeling. This number demands careful handling, or it turns into anxiety and nervous exhaustion.",
+    "22": "Personality Number 22 — a master number, an 'amplified 4,' the 'master builder': the same practicality and hard work, but at the scale of an ability to realize large, significant projects. This is both a great responsibility and a great potential at once, easily lost if scattered on small things."
+   },
+   "destiny": {
+    "1": "The Destiny Number 1 is the life task and path of fulfillment: the person is meant to develop and express outwardly will, leadership, independence, the ability to decide and lead others, learning not to slide into stubbornness, self-centeredness, intolerance of others' opinions.",
+    "2": "The Destiny Number 2 is the life task and path of fulfillment: the person is meant to develop and express outwardly sensitivity, diplomacy, the ability to cooperate and adapt, learning not to slide into anxiety, dependence on others' moods, indecisiveness.",
+    "3": "The Destiny Number 3 is the life task and path of fulfillment: the person is meant to develop and express outwardly creativity, self-expression, sociability, lightness, a sense of humor, learning not to slide into scatteredness, superficiality, avoiding responsibility.",
+    "4": "The Destiny Number 4 is the life task and path of fulfillment: the person is meant to develop and express outwardly order, hard work, discipline, reliability, the ability to see things through, learning not to slide into stubbornness, inflexibility, fussiness, stinginess.",
+    "5": "The Destiny Number 5 is the life task and path of fulfillment: the person is meant to develop and express outwardly freedom, change, curiosity, adaptability, a pull toward movement, learning not to slide into inconstancy, irresponsibility, a tendency toward risky ventures.",
+    "6": "The Destiny Number 6 is the life task and path of fulfillment: the person is meant to develop and express outwardly responsibility, care for loved ones, a sense of home and harmony, learning not to slide into self-sacrifice at one's own expense, intrusive overprotection.",
+    "7": "The Destiny Number 7 is the life task and path of fulfillment: the person is meant to develop and express outwardly analysis, intuition, a tendency toward solitude and the search for meaning, learning not to slide into withdrawal, self-recrimination, distrust of people.",
+    "8": "The Destiny Number 8 is the life task and path of fulfillment: the person is meant to develop and express outwardly organizational ability, business acumen, a drive for power and tangible results, learning not to slide into harshness, an obsession with status and money.",
+    "9": "The Destiny Number 9 is the life task and path of fulfillment: the person is meant to develop and express outwardly compassion, breadth of view, humanism, the ability to give, learning not to slide into self-sacrifice, losing oneself in others' problems, idealism without practicality.",
+    "11": "Destiny Number 11 — a master number, an 'amplified 2': the same sensitivity and need for partnership, but on a higher, almost visionary level — intuition, inspiration, the ability to lead through feeling. This number demands careful handling, or it turns into anxiety and nervous exhaustion.",
+    "22": "Destiny Number 22 — a master number, an 'amplified 4,' the 'master builder': the same practicality and hard work, but at the scale of an ability to realize large, significant projects. This is both a great responsibility and a great potential at once, easily lost if scattered on small things."
+   }
+  }
+ }
+};
+let LANG = "ru";
+let GEN = GEN_ALL[LANG];
+const LIB = {theme:{
+  ru:{1:"целеустремлённость",2:"энергия, эмоции",3:"цель, творчество",4:"упёртость, достижение цели",5:"здоровье, движение, путешествия",6:"семья",7:"интуиция, защита свыше",8:"деньги, финансы",9:"долги, помощь, родственники"},
+  en:{1:"drive, willpower",2:"energy, emotions",3:"purpose, creativity",4:"persistence, achieving goals",5:"health, movement, travel",6:"family",7:"intuition, higher protection",8:"money, finances",9:"debts, help, relatives"}
+}};
+
+/* ---- строковые ресурсы интерфейса (RU/EN) ---- */
+const STR = {
+ ru:{
+  pageTitle:"Квадрат Пифагора — тест",
+  h1:"Квадрат Пифагора по дате и ФИО",
+  sub:"Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.",
+  lblSurname:"Фамилия", lblName:"Имя", lblPatr:"Отчество", lblDate:"Дата рождения",
+  datePlaceholder:"ДД.ММ.ГГГГ", btnCalc:"Рассчитать",
+  nameHint:"",
+  errDate:"Дата должна быть в формате ДД.ММ.ГГГГ",
+  errLetters:"Фамилия, имя и отчество должны содержать русские буквы",
+  warnYear:"Годы 2000+ в схеме не проверялись.",
+  tabNums:"Числа", tabTrakt:"Трактовка", tabGraphs:"Графики", tabInfo:"Тарифы",
+  heroPrefix:"Основная цифра: ",
+  hAddNums:"Дополнительные цифры",
+  kvDay:"День рождения", kvMonth:"Месяц", kvYear:"Год", kvLesson:"Суммарно", kvCode:"Личный код",
+  hSquare:"Квадрат (дополнительные цифры по ячейкам)",
+  hScore:"Баллы (график жизненных сил)",
+  subScore1:"Волна строится из цифр личного кода (", subScore2:"), растянутых на возраст 0–96 лет. Сверено с исходным калькулятором.",
+  hPeriods:"Периоды жизни (задачи и проблемы по возрасту)",
+  subPeriods:"Жизнь делится на 4 периода разной длины. У каждого — своя главная тема (сверху на графике) и трудность, с которой она связана (в кружке).",
+  thAge:"Возраст", thTask:"Задача (тема периода)", thProblem:"Проблема (тема периода)",
+  yearsShort:" лет",
+  noDiff:"нет разницы",
+  subPeriodTrakt:"Трактовка периода — по тому же принципу «одна цифра» (низкая часть шкалы 1–9, без учёта повторов).",
+  taskLabel:" лет — задача: ", problemLabel:"...проблема периода: ",
+  noText:"Текст не подготовлен.",
+  hInterpNums:"Интерпретация: числа",
+  roleDay:"Число дня рождения", roleLesson:"Жизненный урок", roleSoul:"Число Душевного Побуждения",
+  rolePersonality:"Число Личности", roleDestiny:"Число Судьбы",
+  noRoleText:v=>"Для значения "+v+" общий текст не подготовлен.",
+  hInterpCells:"Интерпретация по ячейкам",
+  subCells:"Трактовка зависит не от самой цифры, а от того, сколько раз она встретилась: 0 — урок (качества не хватает), 1 — обычная мера, 2 — выраженный талант, 3 — очень сильно, 4 и больше — избыток.",
+  none:"нет",
+  noCellText:"Общий текст для этого случая не подготовлен.",
+  // вкладка «Тарифы»
+  infoPricingH:"Тарифы",
+  planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"5 дней",
+  planFreeDesc:"Пробный доступ после первого расчёта.",
+  planStdName:"Standard", planStdPrice:"299 ₽", planStdPeriod:"30 дней",
+  planStdDesc:"Разовая оплата открывает доступ на 30 дней (без автопродления и подписки), через ЮKassa.",
+  planFeaturesLabel:"Доступные вкладки:",
+  planBadge:"популярный",
+  infoTermsShort:"Полный текст условий оказания услуг и оплаты — в отдельном документе.",
+  infoTermsLink:"Условия использования (публичная оферта) →",
+  infoContactsH:"Контакты для связи и поддержки",
+  infoContacts:["Email: mvbern8@gmail.com"],
+ },
+ en:{
+  pageTitle:"Pythagorean Square — test",
+  h1:"Pythagorean Square by birth date and name",
+  sub:"Birth date and full name — Pythagorean square, life periods, and number interpretations.",
+  lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic", lblDate:"Date of birth",
+  datePlaceholder:"DD.MM.YYYY", btnCalc:"Calculate",
+  nameHint:"Enter the name in Russian (Cyrillic) letters — the calculation method is based on the Russian alphabet.",
+  errDate:"The date must be in DD.MM.YYYY format",
+  errLetters:"Last name, first name and patronymic must contain Russian (Cyrillic) letters",
+  warnYear:"Years 2000+ have not been validated in this scheme.",
+  tabNums:"Numbers", tabTrakt:"Interpretation", tabGraphs:"Charts", tabInfo:"Pricing",
+  heroPrefix:"Main number: ",
+  hAddNums:"Additional numbers",
+  kvDay:"Day of birth", kvMonth:"Month", kvYear:"Year", kvLesson:"Total", kvCode:"Personal code",
+  hSquare:"Square (additional numbers by cell)",
+  hScore:"Score (life-force chart)",
+  subScore1:"The wave is built from the digits of the personal code (", subScore2:"), stretched across ages 0–96. Checked against the original calculator.",
+  hPeriods:"Life periods (pinnacles and challenges by age)",
+  subPeriods:"Life is split into 4 periods of different lengths. Each has its own main theme (above the chart) and a difficulty tied to it (in the circle).",
+  thAge:"Age", thTask:"Pinnacle (period theme)", thProblem:"Challenge (period theme)",
+  yearsShort:"",
+  noDiff:"no difference",
+  subPeriodTrakt:"Interpretation of the period follows the same 'single digit' principle (low end of the 1–9 scale, repeats not counted).",
+  taskLabel:" — pinnacle: ", problemLabel:"...challenge of the period: ",
+  noText:"Text not prepared yet.",
+  hInterpNums:"Interpretation: numbers",
+  roleDay:"Day of Birth Number", roleLesson:"Life Lesson", roleSoul:"Soul Urge Number",
+  rolePersonality:"Personality Number", roleDestiny:"Destiny Number",
+  noRoleText:v=>"No general text is prepared yet for value "+v+".",
+  hInterpCells:"Interpretation by square cells",
+  subCells:"The interpretation depends not on the digit itself, but on how many times it appears: 0 — a lesson (the quality is lacking), 1 — an ordinary measure, 2 — a pronounced talent, 3 — very strong, 4 or more — excess.",
+  none:"none",
+  noCellText:"No general text is prepared yet for this case.",
+  // вкладка «Тарифы»
+  infoPricingH:"Pricing",
+  planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"5 days",
+  planFreeDesc:"Trial access starting from your first calculation.",
+  planStdName:"Standard", planStdPrice:"299 ₽", planStdPeriod:"30 days",
+  planStdDesc:"A one-time payment unlocks access for 30 days (no auto-renewal or subscription), processed via YooKassa.",
+  planFeaturesLabel:"Included tabs:",
+  planBadge:"most popular",
+  infoTermsShort:"The full terms of service and payment are available as a separate document.",
+  infoTermsLink:"Terms of Use (public offer) →",
+  infoContactsH:"Contacts for support",
+  infoContacts:["Email: mvbern8@gmail.com"],
+ }
+};
+function T(){return STR[LANG]}
+
+/* ---- расчёт (порт pifagor_calc.py) ---- */
+const ROWS=["АИСЪ","БЙТЫ","ВКУЬ","ГЛФЭ","ДМХЮ","ЕНЦЯ","ЁОЧ","ЖПШ","ЗРЩ"];
+const LETTER={}; ROWS.forEach((r,i)=>[...r].forEach(c=>LETTER[c]=i+1));
+const VOWELS=new Set([..."АЕЁИОУЫЭЮЯ"]), NEUTRAL=new Set([..."ЬЪЙ"]);
+const sumDigits=n=>String(n).split("").reduce((a,c)=>a+ +c,0);
+function reduce(n,masters=[11,22]){while(n>9&&!masters.includes(n))n=sumDigits(n);return n}
+function partSums(w){let a=0,v=0,c=0;for(const ch of w.toUpperCase().replace(/\s/g,"")){const x=LETTER[ch];if(!x)continue;a+=x;if(VOWELS.has(ch))v+=x;else if(!NEUTRAL.has(ch))c+=x}return[a,v,c]}
+const mred=(n,mm=[11,22,33])=>{while(n>9&&!mm.includes(n))n=sumDigits(n);return n};
+function calc(dateStr,S,N,P,mode){
+  const [dd,mm,yy]=dateStr.split(".").map(Number);
+  const D=reduce(dd,[]),M=reduce(mm,[]),Y=reduce(yy,[]),d4=reduce(D+M+Y,[]);
+  const raw={фамилия:partSums(S),имя:partSums(N),отчество:partSums(P)};
+  const table={};for(const k in raw)table[k]=raw[k].map(x=>reduce(x));
+  const tot=[0,1,2].map(i=>Object.values(raw).reduce((a,r)=>a+r[i],0));
+  const destiny=reduce(tot[0]),soul=reduce(tot[1]),personality=reduce(tot[2]);
+  const d5=reduce(destiny,[]),main=reduce(d4+d5,[]);
+  const nine=Object.values(table).flat().map(x=>reduce(x,[]));
+  let pool=[...nine]; if(mode!=="nine")pool.push(D,M,Y);
+  if(mode==="all17")pool.push(...[destiny,soul,personality].map(x=>reduce(x,[])),d4,main);
+  const cnt={};pool.forEach(x=>cnt[x]=(cnt[x]||0)+1);
+  // график "Задачи/проблемы" (пики и вызовы): проверено на 11 датах с lifexpert.ru
+  const P1=mred(M+D),C1=mred(Math.abs(M-D));
+  const P2=mred(D+Y),C2=mred(Math.abs(D-Y));
+  const P3=mred(P1+P2),C3=mred(Math.abs(C1-C2));
+  const P4=mred(M+Y),C4=mred(Math.abs(M-Y));
+  let need=D+M+Y; while(need>10&&![11,22,33].includes(need))need=sumDigits(need);
+  const t1=36-need,t2=t1+9,t3=t2+9;
+  const pinnacles=[[0,t1,P1,C1],[t1,t2,P2,C2],[t2,t3,P3,C3],[t3,96,P4,C4]];
+  // личный код: год × месяц × день рождения (без свёртки) — сверено с калькулятором сайта
+  const personalCode=yy*mm*dd;
+  return{D,M,Y,d4,d5,main,destiny,soul,personality,table,cnt,pinnacles,personalCode};
+}
+
+/* ---- вывод ---- */
+const $=id=>document.getElementById(id);
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function textBlock(title,paras){const b=el("div","txt");b.append(el("h3",null,title));paras.forEach(t=>b.append(el("p",null,t)));return b}
+const SVGNS="http://www.w3.org/2000/svg";
+function svgEl(tag,attrs){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e}
+function buildLifepowerChart(personalCode){
+  const W=760,H=190,pad=34,base=H-34,top=16;
+  const ageTicks=[0,12,24,36,48,60,72,84,96];
+  const x=age=>pad+(age/96)*(W-2*pad);
+  const y=v=>base-(v/9)*(base-top);
+  let digits=String(personalCode).split("").map(Number);
+  digits=digits.concat(digits.slice(0,Math.max(0,9-digits.length)));
+  digits=digits.slice(0,9);
+  const wrap=document.createElement("div");wrap.style.cssText="overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 4px";
+  const svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",height:H,style:"display:block;min-width:520px"});
+  svg.append(svgEl("line",{x1:pad,y1:base,x2:W-pad,y2:base,stroke:"var(--line)","stroke-width":1}));
+  for(let v=0;v<=9;v+=3){
+    const yt=svgEl("text",{x:pad-8,y:y(v)+4,"text-anchor":"end",style:"font-size:10px;fill:var(--muted)"});yt.textContent=v;svg.append(yt);
+  }
+  ageTicks.forEach(a=>{
+    svg.append(svgEl("line",{x1:x(a),y1:base,x2:x(a),y2:base+5,stroke:"var(--muted)","stroke-width":1}));
+    const t=svgEl("text",{x:x(a),y:base+18,"text-anchor":"middle",style:"font-size:11px;fill:var(--muted)"});t.textContent=a===0?"0":a+T().yearsShort;svg.append(t)});
+  const pts=ageTicks.map((a,i)=>[x(a),y(digits[i]||0)]);
+  const d=pts.map((p,i)=>(i===0?"M":"L")+p[0]+","+p[1]).join(" ");
+  svg.append(svgEl("path",{d,fill:"none",stroke:"#8a4b2d","stroke-width":2}));
+  pts.forEach(([px,py],i)=>{
+    svg.append(svgEl("circle",{cx:px,cy:py,r:3,fill:"#8a4b2d"}));
+    const t=svgEl("text",{x:px,y:py-8,"text-anchor":"middle",style:"font-size:11px;fill:#8a4b2d;font-weight:700"});t.textContent=digits[i]||0;svg.append(t)});
+  wrap.append(svg);return wrap;
+}
+function buildPinnacleChart(pinnacles){
+  const W=760,H=190,pad=34,base=H-34,peak=46;
+  const x=age=>pad+(age/96)*(W-2*pad);
+  const wrap=document.createElement("div");wrap.style.cssText="overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 4px";
+  const svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",height:H,style:"display:block;min-width:520px"});
+  svg.append(svgEl("line",{x1:pad,y1:base,x2:W-pad,y2:base,stroke:"var(--line)","stroke-width":1}));
+  const ages=[0,...pinnacles.map(p=>p[1])];
+  ages.forEach(a=>{
+    svg.append(svgEl("line",{x1:x(a),y1:base,x2:x(a),y2:base+5,stroke:"var(--muted)","stroke-width":1}));
+    const t=svgEl("text",{x:x(a),y:base+18,"text-anchor":"middle",style:"font-size:11px;fill:var(--muted)"});t.textContent=a===0?"0":(a>=96?"96+":a)+(a?T().yearsShort:"");svg.append(t)});
+  const colors=["#8a4b2d","#b0663f","#8a4b2d","#b0663f"];
+  pinnacles.forEach(([a,b,P,C],i)=>{
+    const x1=x(a),x2=x(Math.min(b,96)),xm=(x1+x2)/2,col=colors[i%colors.length];
+    const path=svgEl("path",{d:`M ${x1} ${base} Q ${xm} ${peak} ${x2} ${base} Z`,fill:col,"fill-opacity":"0.16",stroke:col,"stroke-width":2});
+    svg.append(path);
+    const pt=svgEl("text",{x:xm,y:peak+4,"text-anchor":"middle",style:"font-size:17px;font-weight:700;fill:"+col});pt.textContent=[11,22,33].includes(P)?P+"("+ (P<=9?P:0)+")":P;svg.append(pt);
+    if(C>0){
+      const cy=base-14;
+      svg.append(svgEl("circle",{cx:xm,cy,r:10,fill:"var(--bg)",stroke:col,"stroke-width":1.5}));
+      const ct=svgEl("text",{x:xm,y:cy+4,"text-anchor":"middle",style:"font-size:11px;fill:"+col});ct.textContent=C;svg.append(ct);
+    }
+  });
+  wrap.append(svg);return wrap;
+}
+/* ---- оферта: строится как отдельный самостоятельный HTML-документ и открывается
+   через Blob-URL — так ссылка работает и в превью, и без второго файла рядом ---- */
+const OFERTA_CSS = ":root{--bg:#faf9f7;--fg:#1f1d1a;--muted:#6b665f;--card:#fff;--line:#e2ded7;--accent:#8a4b2d}"
+ +"@media (prefers-color-scheme:dark){:root{--bg:#191816;--fg:#ece8e1;--muted:#a49e94;--card:#232220;--line:#3a3733;--accent:#e0a17c}}"
+ +"*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,'Segoe UI',sans-serif}"
+ +"main{max-width:720px;margin:0 auto;padding:24px 16px 64px}h1{font-size:21px;margin:0 0 4px}"
+ +".sub{color:var(--muted);margin:0 0 24px;font-size:14px}"
+ +".doc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px}"
+ +".doc p{margin:0 0 14px;font-size:15px}.doc p:last-child{margin-bottom:0}";
+const OFERTA_PARAS = {
+ ru:[
+  "Настоящий документ является публичной офертой Марины Бобренко, самозанятой (плательщик налога на профессиональный доход) (далее — «Исполнитель») на оказание информационных услуг с использованием сервиса «Квадрат Пифагора» (далее — «Сервис»).",
+  "1. Предмет. Исполнитель предоставляет Пользователю доступ к автоматическому расчёту нумерологической матрицы (квадрата Пифагора) по дате рождения и ФИО, а также текстовую трактовку полученных чисел.",
+  "2. Характер услуг. Результаты расчёта носят информационно-развлекательный характер, не являются медицинской, психологической, юридической или финансовой консультацией и не заменяют профессиональную помощь.",
+  "3. Тарифы и оплата. Тариф «Free» действует 5 дней с первого расчёта и открывает доступ к вкладкам «Числа» и «Трактовка» бесплатно. Тариф «Standard» — разовый платёж 299 ₽, открывает доступ ко всем вкладкам (включая «Графики») на 30 дней. Оплата производится через платёжный сервис ЮKassa; автоматическое продление и повторное списание средств не предусмотрены — по истечении срока доступ продлевается повторной разовой оплатой.",
+  "4. Возврат. Доступ к оплаченному тарифу предоставляется мгновенно после оплаты. Возврат средств возможен в случае технической ошибки, из-за которой доступ не был предоставлен, — по обращению в поддержку (см. «Контакты»).",
+  "5. Персональные данные. Дата рождения и ФИО, введённые в форму, используются только для расчёта и не передаются третьим лицам, за исключением данных, необходимых платёжному сервису для обработки платежа.",
+  "6. Согласие. Начиная использовать Сервис и/или производя оплату, Пользователь подтверждает согласие с условиями настоящей оферты. Действующая редакция всегда доступна на этой странице.",
+  "Контакты: email mvbern8@gmail.com.",
+ ],
+ en:[
+  "This document is a public offer by Marina Bobrenko, a self-employed individual (professional-income taxpayer, Russia) (the “Provider”) to render information services using the “Pythagorean Square” service (the “Service”).",
+  "1. Subject. The Provider gives the User access to an automated calculation of the numerology matrix (Pythagorean square) from a birth date and full name, together with a text interpretation of the resulting numbers.",
+  "2. Nature of the service. The results are for informational and entertainment purposes only; they are not medical, psychological, legal or financial advice and do not replace professional help.",
+  "3. Plans and payment. The “Free” plan lasts 5 days from the first calculation and gives free access to the “Numbers” and “Interpretation” tabs. The “Standard” plan is a one-time payment of 299 ₽ that unlocks all tabs (including “Charts”) for 30 days. Payment is processed via the YooKassa payment service; there is no automatic renewal or recurring charge — after the period ends, access is renewed with another one-time payment.",
+  "4. Refunds. Access to a paid plan is granted instantly after payment. A refund is possible if a technical error prevented access from being granted — by contacting support (see “Contacts”).",
+  "5. Personal data. The birth date and name entered in the form are used only to perform the calculation and are not shared with third parties, except data required by the payment service to process the payment.",
+  "6. Consent. By using the Service and/or making a payment, the User confirms agreement with the terms of this offer. The current version is always available on this page.",
+  "Contacts: email mvbern8@gmail.com.",
+ ],
+};
+function escapeHtml(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function ofertaDocHTML(){
+  const lang=LANG;
+  const title=lang==="ru"?"Публичная оферта — Квадрат Пифагора":"Public Offer — Pythagorean Square";
+  const h1=lang==="ru"?"Публичная оферта":"Public Offer";
+  const sub=lang==="ru"?"Условия использования сервиса «Квадрат Пифагора»":"Terms of use for the “Pythagorean Square” service";
+  const body=OFERTA_PARAS[lang].map(p=>"<p>"+escapeHtml(p)+"</p>").join("");
+  return "<!doctype html><html lang=\""+lang+"\"><head><meta charset=\"utf-8\">"
+   +"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+   +"<title>"+escapeHtml(title)+"</title><style>"+OFERTA_CSS+"</style></head>"
+   +"<body><main><h1>"+escapeHtml(h1)+"</h1><p class=\"sub\">"+escapeHtml(sub)+"</p>"
+   +"<div class=\"doc\">"+body+"</div></main></body></html>";
+}
+function openOferta(){
+  const blob=new Blob([ofertaDocHTML()],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const win=window.open(url,"_blank");
+  if(!win)location.href=url;
+}
+function buildInfoTab(){
+  const s=T();
+  const tab=el("div","tabpanel");tab.id="tab-info";
+  tab.append(el("h2",null,s.infoPricingH));
+
+  const wrap=el("div","plans");
+  const freeFeat=[s.tabNums,s.tabTrakt];
+  const stdFeat=[s.tabNums,s.tabTrakt,s.tabGraphs];
+  const mkPlan=(hl,name,price,period,desc,feat)=>{
+    const p=el("div","plan"+(hl?" hl":""));
+    if(hl)p.append(el("span","badge",s.planBadge));
+    p.append(el("h3",null,name));
+    p.append(el("div","plan-price",price));
+    p.append(el("div","plan-period",period));
+    p.append(el("div","plan-desc",desc));
+    p.append(el("div","plan-feat-label",s.planFeaturesLabel));
+    const ul=el("ul");feat.forEach(f=>ul.append(el("li",null,f)));p.append(ul);
+    return p;
+  };
+  wrap.append(mkPlan(false,s.planFreeName,s.planFreePrice,s.planFreePeriod,s.planFreeDesc,freeFeat));
+  wrap.append(mkPlan(true,s.planStdName,s.planStdPrice,s.planStdPeriod,s.planStdDesc,stdFeat));
+  tab.append(wrap);
+
+  const termsBox=el("div","txt");
+  termsBox.append(el("p",null,s.infoTermsShort));
+  const tp=el("p","terms-link");
+  const a=el("a",null,s.infoTermsLink);a.href="oferta.html";a.target="_blank";a.rel="noopener";
+  a.addEventListener("click",e=>{e.preventDefault();openOferta()});
+  tp.append(a);termsBox.append(tp);
+  tab.append(termsBox);
+
+  tab.append(el("h2",null,s.infoContactsH));
+  const contacts=el("div","txt");
+  s.infoContacts.forEach(line=>contacts.append(el("p",null,line)));
+  tab.append(contacts);
+  return tab;
+}
+let currentTab="nums";
+let lastResult=null;
+function render(r){
+  lastResult=r;
+  const s=T(), THEME=LIB.theme[LANG];
+  const o=$("out");o.replaceChildren();
+  const tabNums=el("div","tabpanel"),tabGraphs=el("div","tabpanel"),tabTrakt=el("div","tabpanel"),tabInfo=buildInfoTab();
+  tabNums.id="tab-nums";tabGraphs.id="tab-graphs";tabTrakt.id="tab-trakt";
+
+  // === вкладка «Числа»: основная цифра, доп. цифры, квадрат ===
+  const hero=el("div","txt");hero.append(el("h3",null,s.heroPrefix+r.main));
+  tabNums.append(hero);
+  tabNums.append(el("h2",null,s.hAddNums));
+  const kv=el("div","kv");
+  [[s.kvDay,r.D],[s.kvMonth,r.M],[s.kvYear,r.Y],[s.kvLesson,r.d4],[s.kvCode,r.personalCode]].forEach(([k,v])=>{kv.append(el("span",null,k),el("b",null,v))});
+  tabNums.append(kv);
+  tabNums.append(el("h2",null,s.hSquare));
+  const g=el("div","grid3");
+  [[1,4,7],[2,5,8],[3,6,9]].flatMap(x=>x).forEach(n=>{ // строка = 1,4,7 / 2,5,8 / 3,6,9
+    const c=r.cnt[n]||0;const cell=el("div",c?"has":null,c?String(n).repeat(c):"–");cell.append(el("small",null,n+" · "+THEME[n]));g.append(cell)});
+  tabNums.append(g);
+
+  // === вкладка «Графики»: волна жизненных сил + пики/вызовы (график + таблица, без текста) ===
+  tabGraphs.append(el("h2",null,s.hScore));
+  tabGraphs.append(el("p","sub",s.subScore1+r.personalCode+s.subScore2));
+  tabGraphs.append(buildLifepowerChart(r.personalCode));
+  tabGraphs.append(el("h2",null,s.hPeriods));
+  tabGraphs.append(el("p","sub",s.subPeriods));
+  const themeOf=v=>{if(v===0)return s.noDiff;const k=v<=9?v:mred(v,[]);return THEME[k]||k};
+  const fmtV=v=>[11,22,33].includes(v)?v+" ("+mred(v,[])+")":String(v);
+  tabGraphs.append(buildPinnacleChart(r.pinnacles));
+  const pt=el("table");const ph=el("tr");[s.thAge,s.thTask,s.thProblem].forEach(h=>ph.append(el("th",null,h)));pt.append(ph);
+  r.pinnacles.forEach(([a,b,P,C])=>{const tr=el("tr");
+    tr.append(el("td",null,a+"–"+(b===96?"96+":b)+s.yearsShort));
+    tr.append(el("td",null,fmtV(P)+" — "+themeOf(P)));
+    tr.append(el("td",null,fmtV(C)+" — "+themeOf(C)));
+    pt.append(tr)});
+  tabGraphs.append(pt);
+  tabGraphs.append(el("p","sub",s.subPeriodTrakt));
+  r.pinnacles.forEach(([a,b,P,C],i)=>{
+    const Pk=P<=9?P:mred(P,[]), Ck=C<=9?C:mred(C,[]);
+    const b1=textBlock(a+"–"+(b===96?"96+":b)+s.yearsShort+s.taskLabel+fmtV(P)+" ("+THEME[Pk]+")", [GEN.square_tier[Pk]&&GEN.square_tier[Pk]["1"]||s.noText]);
+    tabGraphs.append(b1);
+    if(C>0){const b2=textBlock(s.problemLabel+fmtV(C)+" ("+THEME[Ck]+")", [GEN.square_tier[Ck]&&GEN.square_tier[Ck]["1"]||s.noText]);tabGraphs.append(b2)}
+  });
+
+  // === вкладка «Трактовка»: именные числа, ячейки квадрата ===
+  tabTrakt.append(el("h2",null,s.hInterpNums));
+  const roleRow=(roleKey,label,value)=>{
+    const b=el("div","txt");b.append(el("h3",null,label+" — "+value));
+    const gg=GEN.role[roleKey]&&GEN.role[roleKey][String(value)];
+    b.append(el("p",null,gg||s.noRoleText(value)));
+    tabTrakt.append(b)};
+  roleRow("day",s.roleDay,r.D);
+  roleRow("lesson",s.roleLesson,r.d4);
+  roleRow("soul",s.roleSoul,r.soul);
+  roleRow("personality",s.rolePersonality,r.personality);
+  roleRow("destiny",s.roleDestiny,r.d5!==r.destiny?r.d5:r.destiny);
+  tabTrakt.append(el("h2",null,s.hInterpCells));
+  tabTrakt.append(el("p","sub",s.subCells));
+  for(let n=1;n<=9;n++){const c=r.cnt[n]||0,tier=String(Math.min(c,4)),head=n+" — "+THEME[n]+" ("+(c?String(n).repeat(c):s.none)+")";
+    const b=el("div","txt");b.append(el("h3",null,head));
+    const gg=GEN.square_tier[n]&&GEN.square_tier[n][tier];
+    b.append(el("p",null,gg||s.noCellText));
+    tabTrakt.append(b)}
+
+  // === панель вкладок ===
+  const bar=el("div","tabbar");
+  const tabs=[["nums",s.tabNums,tabNums],["trakt",s.tabTrakt,tabTrakt],["graphs",s.tabGraphs,tabGraphs],["info",s.tabInfo,tabInfo]];
+  const panels={};
+  tabs.forEach(([key,label,panel])=>{
+    panels[key]=panel;
+    const btn=el("button",null,label);btn.type="button";btn.dataset.tab=key;
+    btn.addEventListener("click",()=>switchTab(key));
+    bar.append(btn);
+  });
+  o.append(bar);
+  tabs.forEach(([key,,panel])=>o.append(panel));
+  function switchTab(key){
+    currentTab=key;
+    bar.querySelectorAll(".tabbtn,button").forEach(b=>b.classList.toggle("active",b.dataset.tab===key));
+    tabs.forEach(([k,,panel])=>panel.classList.toggle("active",k===key));
+  }
+  bar.querySelectorAll("button").forEach(b=>b.className="tabbtn");
+  switchTab(tabs.some(([k])=>k===currentTab)?currentTab:"nums");
+}
+function applyStaticLang(){
+  const s=T();
+  $("pageTitle").textContent=s.pageTitle; document.title=s.pageTitle;
+  $("h1Title").textContent=s.h1;
+  $("subText").textContent=s.sub;
+  $("lblSurname").textContent=s.lblSurname;
+  $("lblName").textContent=s.lblName;
+  $("lblPatr").textContent=s.lblPatr;
+  $("lblDate").textContent=s.lblDate;
+  $("d").placeholder=s.datePlaceholder;
+  $("btnCalc").textContent=s.btnCalc;
+  $("nameHint").textContent=s.nameHint;
+  document.documentElement.lang=LANG;
+  $("langbar").querySelectorAll(".langbtn").forEach(b=>b.classList.toggle("active",b.dataset.lang===LANG));
+}
+$("langbar").addEventListener("click",e=>{
+  const b=e.target.closest(".langbtn");if(!b)return;
+  const lang=b.dataset.lang; if(lang===LANG)return;
+  LANG=lang; GEN=GEN_ALL[LANG];
+  applyStaticLang();
+  if(lastResult)render(lastResult);
+});
+$("f").addEventListener("submit",e=>{e.preventDefault();$("err").textContent="";
+  const s=T();
+  const ds=$("d").value.trim(),m=ds.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(!m||+m[1]<1||+m[1]>31||+m[2]<1||+m[2]>12){$("err").textContent=s.errDate;return}
+  const bad=[$("s").value,$("n").value,$("p").value].some(w=>![...w.toUpperCase()].some(c=>LETTER[c]));
+  if(bad){$("err").textContent=s.errLetters;return}
+  let msg="";if(+m[3]>=2000)msg=s.warnYear;$("err").textContent=msg;
+  render(calc(ds,$("s").value,$("n").value,$("p").value,"all17"));
+});
+applyStaticLang();
+$("f").requestSubmit();
+</script>
+</body></html>

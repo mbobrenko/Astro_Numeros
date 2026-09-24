@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Публичная оферта — Квадрат Пифагора</title>
+<style>
+  :root{--bg:#faf9f7;--fg:#1f1d1a;--muted:#6b665f;--card:#fff;--line:#e2ded7;--accent:#8a4b2d;--hi:#f3e6dc}
+  @media (prefers-color-scheme:dark){:root{--bg:#191816;--fg:#ece8e1;--muted:#a49e94;--card:#232220;--line:#3a3733;--accent:#e0a17c;--hi:#33271f}}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,"Segoe UI",sans-serif}
+  main{max-width:720px;margin:0 auto;padding:24px 16px 64px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  h1{font-size:21px;margin:0 0 4px}
+  .sub{color:var(--muted);margin:0 0 24px;font-size:14px}
+  .langbar{display:flex;gap:2px;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+  .langbtn{font:inherit;font-size:13px;background:var(--card);color:var(--muted);border:0;padding:6px 12px;cursor:pointer}
+  .langbtn.active{background:var(--accent);color:#fff}
+  .doc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px}
+  .doc p{margin:0 0 14px;font-size:15px}
+  .doc p:last-child{margin-bottom:0}
+  .back{display:inline-block;margin-top:20px;font-size:14px;color:var(--accent);text-decoration:none;font-weight:600}
+  .back:hover{text-decoration:underline}
+</style>
+</head>
+<body><main>
+<div class="topbar">
+  <div>
+    <h1 id="h1Title">Публичная оферта</h1>
+    <p class="sub" id="subText">Условия использования сервиса «Квадрат Пифагора»</p>
+  </div>
+  <div class="langbar" id="langbar">
+    <button type="button" class="langbtn" data-lang="ru">RU</button>
+    <button type="button" class="langbtn" data-lang="en">EN</button>
+  </div>
+</div>
+<div class="doc" id="doc"></div>
+<a class="back" id="backLink" href="index.html">← К калькулятору</a>
+</main>
+<script>
+const STR = {
+ ru:{
+  pageTitle:"Публичная оферта — Квадрат Пифагора",
+  h1:"Публичная оферта",
+  sub:"Условия использования сервиса «Квадрат Пифагора»",
+  back:"← К калькулятору",
+  paras:[
+   "Настоящий документ является публичной офертой Марины Бобренко, самозанятой (плательщик налога на профессиональный доход) (далее — «Исполнитель») на оказание информационных услуг с использованием сервиса «Квадрат Пифагора» (далее — «Сервис»).",
+   "1. Предмет. Исполнитель предоставляет Пользователю доступ к автоматическому расчёту нумерологической матрицы (квадрата Пифагора) по дате рождения и ФИО, а также текстовую трактовку полученных чисел.",
+   "2. Характер услуг. Результаты расчёта носят информационно-развлекательный характер, не являются медицинской, психологической, юридической или финансовой консультацией и не заменяют профессиональную помощь.",
+   "3. Тарифы и оплата. Тариф «Free» действует 5 дней с первого расчёта и открывает доступ к вкладкам «Числа» и «Трактовка» бесплатно. Тариф «Standard» — разовый платёж 299 ₽, открывает доступ ко всем вкладкам (включая «Графики») на 30 дней. Оплата производится через платёжный сервис ЮKassa; автоматическое продление и повторное списание средств не предусмотрены — по истечении срока доступ продлевается повторной разовой оплатой.",
+   "4. Возврат. Доступ к оплаченному тарифу предоставляется мгновенно после оплаты. Возврат средств возможен в случае технической ошибки, из-за которой доступ не был предоставлен, — по обращению в поддержку (см. «Контакты»).",
+   "5. Персональные данные. Дата рождения и ФИО, введённые в форму, используются только для расчёта и не передаются третьим лицам, за исключением данных, необходимых платёжному сервису для обработки платежа.",
+   "6. Согласие. Начиная использовать Сервис и/или производя оплату, Пользователь подтверждает согласие с условиями настоящей оферты. Действующая редакция всегда доступна на этой странице.",
+   "Контакты: email mvbern8@gmail.com.",
+  ],
+ },
+ en:{
+  pageTitle:"Public Offer — Pythagorean Square",
+  h1:"Public Offer",
+  sub:"Terms of use for the “Pythagorean Square” service",
+  back:"← Back to the calculator",
+  paras:[
+   "This document is a public offer by Marina Bobrenko, a self-employed individual (professional-income taxpayer, Russia) (the “Provider”) to render information services using the “Pythagorean Square” service (the “Service”).",
+   "1. Subject. The Provider gives the User access to an automated calculation of the numerology matrix (Pythagorean square) from a birth date and full name, together with a text interpretation of the resulting numbers.",
+   "2. Nature of the service. The results are for informational and entertainment purposes only; they are not medical, psychological, legal or financial advice and do not replace professional help.",
+   "3. Plans and payment. The “Free” plan lasts 5 days from the first calculation and gives free access to the “Numbers” and “Interpretation” tabs. The “Standard” plan is a one-time payment of 299 ₽ that unlocks all tabs (including “Charts”) for 30 days. Payment is processed via the YooKassa payment service; there is no automatic renewal or recurring charge — after the period ends, access is renewed with another one-time payment.",
+   "4. Refunds. Access to a paid plan is granted instantly after payment. A refund is possible if a technical error prevented access from being granted — by contacting support (see “Contacts”).",
+   "5. Personal data. The birth date and name entered in the form are used only to perform the calculation and are not shared with third parties, except data required by the payment service to process the payment.",
+   "6. Consent. By using the Service and/or making a payment, the User confirms agreement with the terms of this offer. The current version is always available on this page.",
+   "Contacts: email mvbern8@gmail.com.",
+  ],
+ }
+};
+let LANG="ru";
+const $=id=>document.getElementById(id);
+function render(){
+  const s=STR[LANG];
+  $("pageTitle").textContent=s.pageTitle; document.title=s.pageTitle;
+  $("h1Title").textContent=s.h1;
+  $("subText").textContent=s.sub;
+  $("backLink").textContent=s.back;
+  document.documentElement.lang=LANG;
+  const doc=$("doc");doc.replaceChildren();
+  s.paras.forEach(t=>{const p=document.createElement("p");p.textContent=t;doc.append(p)});
+  $("langbar").querySelectorAll(".langbtn").forEach(b=>b.classList.toggle("active",b.dataset.lang===LANG));
+}
+$("langbar").addEventListener("click",e=>{
+  const b=e.target.closest(".langbtn");if(!b)return;
+  if(b.dataset.lang===LANG)return;
+  LANG=b.dataset.lang;render();
+});
+render();
+</script>
+</body></html>
