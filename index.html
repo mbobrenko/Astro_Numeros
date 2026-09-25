@@ -404,9 +404,9 @@ const STR = {
   sub:"Birth date and full name — Pythagorean square, life periods, and number interpretations.",
   lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic", lblDate:"Date of birth",
   datePlaceholder:"DD.MM.YYYY", btnCalc:"Calculate",
-  nameHint:"Enter the name in Russian (Cyrillic) letters — the calculation method is based on the Russian alphabet.",
+  nameHint:"Enter the name in Latin letters — in English mode the same Pythagorean method is used, but calculated with a Latin-alphabet number table (A, J, S → 1; B, K, T → 2, and so on). Important note: for the same person the result may differ from the Russian (Cyrillic) calculation, since the letters map to different numbers.",
   errDate:"The date must be in DD.MM.YYYY format",
-  errLetters:"Last name, first name and patronymic must contain Russian (Cyrillic) letters",
+  errLetters:"Last name, first name and patronymic must contain Latin letters",
   warnYear:"Years 2000+ have not been validated in this scheme.",
   tabNums:"Numbers", tabTrakt:"Interpretation", tabGraphs:"Charts", tabInfo:"Pricing",
   heroPrefix:"Main number: ",
@@ -451,14 +451,33 @@ function T(){return STR[LANG]}
 const ROWS=["АИСЪ","БЙТЫ","ВКУЬ","ГЛФЭ","ДМХЮ","ЕНЦЯ","ЁОЧ","ЖПШ","ЗРЩ"];
 const LETTER={}; ROWS.forEach((r,i)=>[...r].forEach(c=>LETTER[c]=i+1));
 const VOWELS=new Set([..."АЕЁИОУЫЭЮЯ"]), NEUTRAL=new Set([..."ЬЪЙ"]);
+/* Латинская версия той же схемы Пифагора (та же методика 1-9, но по латинскому алфавиту) */
+const ROWS_EN=["AJS","BKT","CLU","DMV","ENW","FOX","GPY","HQZ","IR"];
+const LETTER_EN={}; ROWS_EN.forEach((r,i)=>[...r].forEach(c=>LETTER_EN[c]=i+1));
+const VOWELS_EN=new Set([..."AEIOU"]), NEUTRAL_EN=new Set();
+const ALPHA={
+  ru:{LETTER,VOWELS,NEUTRAL},
+  en:{LETTER:LETTER_EN,VOWELS:VOWELS_EN,NEUTRAL:NEUTRAL_EN}
+};
+/* транслитерация кириллицы в латиницу — для автозаполнения полей при переключении на английский */
+const TRANSLIT_MAP={А:"A",Б:"B",В:"V",Г:"G",Д:"D",Е:"E",Ё:"E",Ж:"Zh",З:"Z",И:"I",Й:"Y",К:"K",Л:"L",М:"M",Н:"N",О:"O",П:"P",Р:"R",С:"S",Т:"T",У:"U",Ф:"F",Х:"Kh",Ц:"Ts",Ч:"Ch",Ш:"Sh",Щ:"Shch",Ъ:"",Ы:"Y",Ь:"",Э:"E",Ю:"Yu",Я:"Ya"};
+function translit(w){
+  return [...(w||"")].map(ch=>{
+    const up=ch.toUpperCase();
+    const t=TRANSLIT_MAP[up];
+    if(t===undefined)return ch;
+    return ch===up?t:(t.charAt(0).toLowerCase()+t.slice(1));
+  }).join("");
+}
 const sumDigits=n=>String(n).split("").reduce((a,c)=>a+ +c,0);
 function reduce(n,masters=[11,22]){while(n>9&&!masters.includes(n))n=sumDigits(n);return n}
-function partSums(w){let a=0,v=0,c=0;for(const ch of w.toUpperCase().replace(/\s/g,"")){const x=LETTER[ch];if(!x)continue;a+=x;if(VOWELS.has(ch))v+=x;else if(!NEUTRAL.has(ch))c+=x}return[a,v,c]}
+function partSums(w,alpha){let a=0,v=0,c=0;for(const ch of w.toUpperCase().replace(/\s/g,"")){const x=alpha.LETTER[ch];if(!x)continue;a+=x;if(alpha.VOWELS.has(ch))v+=x;else if(!alpha.NEUTRAL.has(ch))c+=x}return[a,v,c]}
 const mred=(n,mm=[11,22,33])=>{while(n>9&&!mm.includes(n))n=sumDigits(n);return n};
-function calc(dateStr,S,N,P,mode){
+function calc(dateStr,S,N,P,mode,lang){
+  const alpha=ALPHA[lang||"ru"];
   const [dd,mm,yy]=dateStr.split(".").map(Number);
   const D=reduce(dd,[]),M=reduce(mm,[]),Y=reduce(yy,[]),d4=reduce(D+M+Y,[]);
-  const raw={фамилия:partSums(S),имя:partSums(N),отчество:partSums(P)};
+  const raw={фамилия:partSums(S,alpha),имя:partSums(N,alpha),отчество:partSums(P,alpha)};
   const table={};for(const k in raw)table[k]=raw[k].map(x=>reduce(x));
   const tot=[0,1,2].map(i=>Object.values(raw).reduce((a,r)=>a+r[i],0));
   const destiny=reduce(tot[0]),soul=reduce(tot[1]),personality=reduce(tot[2]);
@@ -723,21 +742,32 @@ function applyStaticLang(){
   document.documentElement.lang=LANG;
   $("langbar").querySelectorAll(".langbtn").forEach(b=>b.classList.toggle("active",b.dataset.lang===LANG));
 }
+let fieldsByLang={};
 $("langbar").addEventListener("click",e=>{
   const b=e.target.closest(".langbtn");if(!b)return;
   const lang=b.dataset.lang; if(lang===LANG)return;
+  fieldsByLang[LANG]={s:$("s").value,n:$("n").value,p:$("p").value,d:$("d").value};
   LANG=lang; GEN=GEN_ALL[LANG];
+  if(!fieldsByLang[LANG]){
+    const src=fieldsByLang.ru||{s:$("s").value,n:$("n").value,p:$("p").value,d:$("d").value};
+    fieldsByLang[LANG]=lang==="en"
+      ? {s:translit(src.s),n:translit(src.n),p:translit(src.p),d:src.d}
+      : {...src};
+  }
+  const f=fieldsByLang[LANG];
+  $("s").value=f.s; $("n").value=f.n; $("p").value=f.p; $("d").value=f.d;
   applyStaticLang();
-  if(lastResult)render(lastResult);
+  $("f").requestSubmit();
 });
 $("f").addEventListener("submit",e=>{e.preventDefault();$("err").textContent="";
   const s=T();
   const ds=$("d").value.trim(),m=ds.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
   if(!m||+m[1]<1||+m[1]>31||+m[2]<1||+m[2]>12){$("err").textContent=s.errDate;return}
-  const bad=[$("s").value,$("n").value,$("p").value].some(w=>![...w.toUpperCase()].some(c=>LETTER[c]));
+  const alpha=ALPHA[LANG];
+  const bad=[$("s").value,$("n").value,$("p").value].some(w=>![...w.toUpperCase()].some(c=>alpha.LETTER[c]));
   if(bad){$("err").textContent=s.errLetters;return}
   let msg="";if(+m[3]>=2000)msg=s.warnYear;$("err").textContent=msg;
-  render(calc(ds,$("s").value,$("n").value,$("p").value,"all17"));
+  render(calc(ds,$("s").value,$("n").value,$("p").value,"all17",LANG));
 });
 applyStaticLang();
 $("f").requestSubmit();
