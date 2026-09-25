@@ -445,7 +445,7 @@ const STR = {
   pageTitle:"Pythagorean Square — test",
   h1:"Pythagorean Square by birth date and name",
   sub:"Birth date and full name — Pythagorean square, life periods, and number interpretations.",
-  lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic", lblDate:"Date of birth",
+  lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic (optional)", lblDate:"Date of birth",
   datePlaceholder:"DD.MM.YYYY", btnCalc:"Calculate",
   nameHint:"",
   errDate:"The date must be in DD.MM.YYYY format",
@@ -777,6 +777,7 @@ function applyStaticLang(){
   $("lblSurname").textContent=s.lblSurname;
   $("lblName").textContent=s.lblName;
   $("lblPatr").textContent=s.lblPatr;
+  $("p").required=(LANG!=="en");
   $("lblDate").textContent=s.lblDate;
   $("d").placeholder=s.datePlaceholder;
   $("btnCalc").textContent=s.btnCalc;
@@ -806,7 +807,10 @@ $("f").addEventListener("submit",e=>{e.preventDefault();$("err").textContent="";
   const ds=$("d").value.trim(),m=ds.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
   if(!m||+m[1]<1||+m[1]>31||+m[2]<1||+m[2]>12){$("err").textContent=s.errDate;return}
   const alpha=ALPHA[LANG];
-  const bad=[$("s").value,$("n").value,$("p").value].some(w=>![...w.toUpperCase()].some(c=>alpha.LETTER[c]));
+  const hasLetters=w=>[...w.toUpperCase()].some(c=>alpha.LETTER[c]);
+  const pVal=$("p").value.trim();
+  const pOk=!$("p").required&&pVal===""?true:hasLetters(pVal);
+  const bad=!hasLetters($("s").value)||!hasLetters($("n").value)||!pOk;
   if(bad){$("err").textContent=s.errLetters;return}
   $("err").textContent="";
   render(calc(ds,$("s").value,$("n").value,$("p").value,"all17",LANG));
