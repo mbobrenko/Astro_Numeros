@@ -361,7 +361,6 @@ const STR = {
   nameHint:"",
   errDate:"Дата должна быть в формате ДД.ММ.ГГГГ",
   errLetters:"Фамилия, имя и отчество должны содержать русские буквы",
-  warnYear:"Годы 2000+ в схеме не проверялись.",
   tabNums:"Числа", tabTrakt:"Трактовка", tabGraphs:"Графики", tabInfo:"Тарифы",
   heroPrefix:"Основная цифра: ",
   hAddNums:"Дополнительные цифры",
@@ -404,10 +403,9 @@ const STR = {
   sub:"Birth date and full name — Pythagorean square, life periods, and number interpretations.",
   lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic", lblDate:"Date of birth",
   datePlaceholder:"DD.MM.YYYY", btnCalc:"Calculate",
-  nameHint:"Enter the name in Latin letters — in English mode the same Pythagorean method is used, but calculated with a Latin-alphabet number table (A, J, S → 1; B, K, T → 2, and so on). Important note: for the same person the result may differ from the Russian (Cyrillic) calculation, since the letters map to different numbers.",
+  nameHint:"",
   errDate:"The date must be in DD.MM.YYYY format",
   errLetters:"Last name, first name and patronymic must contain Latin letters",
-  warnYear:"Years 2000+ have not been validated in this scheme.",
   tabNums:"Numbers", tabTrakt:"Interpretation", tabGraphs:"Charts", tabInfo:"Pricing",
   heroPrefix:"Main number: ",
   hAddNums:"Additional numbers",
@@ -766,7 +764,7 @@ $("f").addEventListener("submit",e=>{e.preventDefault();$("err").textContent="";
   const alpha=ALPHA[LANG];
   const bad=[$("s").value,$("n").value,$("p").value].some(w=>![...w.toUpperCase()].some(c=>alpha.LETTER[c]));
   if(bad){$("err").textContent=s.errLetters;return}
-  let msg="";if(+m[3]>=2000)msg=s.warnYear;$("err").textContent=msg;
+  $("err").textContent="";
   render(calc(ds,$("s").value,$("n").value,$("p").value,"all17",LANG));
 });
 applyStaticLang();
