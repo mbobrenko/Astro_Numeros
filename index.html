@@ -55,6 +55,15 @@
   .terms-link{font-size:14.5px}
   .terms-link a{color:var(--accent);font-weight:600;text-decoration:none}
   .terms-link a:hover{text-decoration:underline}
+  .authbar{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted);flex:none}
+  .authbar .who{white-space:nowrap}
+  .authbar button{padding:6px 12px;font-size:13px;align-self:auto}
+  .authbar .linklike{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font:inherit;text-decoration:underline}
+  .paywall-packs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .paywall-packs button{align-self:auto}
+  .pack-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 14px}
+  .pack-btn b{font-size:15px}
+  .pack-btn span{font-size:12px;opacity:.85;font-weight:400}
 </style>
 </head>
 <body><main>
@@ -63,9 +72,12 @@
     <h1 id="h1Title">Квадрат Пифагора по дате и ФИО</h1>
     <p class="sub" id="subText">Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.</p>
   </div>
-  <div class="langbar" id="langbar">
-    <button type="button" class="langbtn" data-lang="ru">RU</button>
-    <button type="button" class="langbtn" data-lang="en">EN</button>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+    <div class="langbar" id="langbar">
+      <button type="button" class="langbtn" data-lang="ru">RU</button>
+      <button type="button" class="langbtn" data-lang="en">EN</button>
+    </div>
+    <div class="authbar" id="authbar"></div>
   </div>
 </div>
 
@@ -394,6 +406,22 @@ const LIB = {theme:{
   en:{1:"drive, willpower",2:"energy, emotions",3:"purpose, creativity",4:"persistence, achieving goals",5:"health, movement, travel",6:"family",7:"intuition, higher protection",8:"money, finances",9:"debts, help, relatives"}
 }};
 
+/* ---- оплата и вход через Telegram: конфиг, меняется при развёртывании ---- */
+const API_BASE = "/api"; // бэкенд должен быть на том же домене, что и страница
+const TG_BOT_USERNAME = "AstroNumeros_bot"; // username бота из @BotFather, без @
+const PACKS_INFO = {
+  ru:[
+    {key:"pack3", credits:3, price:"399 ₽"},
+    {key:"pack10", credits:10, price:"999 ₽", best:true},
+    {key:"pack15", credits:15, price:"1399 ₽"},
+  ],
+  en:[
+    {key:"pack3", credits:3, price:"$4.99"},
+    {key:"pack10", credits:10, price:"$11.99", best:true},
+    {key:"pack15", credits:15, price:"$15.99"},
+  ],
+};
+
 /* ---- строковые ресурсы интерфейса (RU/EN) ---- */
 const STR = {
  ru:{
@@ -430,16 +458,29 @@ const STR = {
   noCellText:"Общий текст для этого случая не подготовлен.",
   // вкладка «Тарифы»
   infoPricingH:"Тарифы",
-  planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"5 дней",
-  planFreeDesc:"Пробный доступ после первого расчёта.",
-  planStdName:"Standard", planStdPrice:"299 ₽", planStdPeriod:"30 дней",
-  planStdDesc:"Разовая оплата открывает доступ на 30 дней (без автопродления и подписки), через ЮKassa.",
+  planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"навсегда",
+  planFreeDesc:"Вкладки «Числа» и «Трактовка» — без ограничений. Плюс один бесплатный разбор с открытием вкладки «Графики».",
+  packPeriod:"разово, без срока действия",
+  packDesc:n=>"Открывает вкладку «Графики» для "+n+" расчётов.", // после «для» число всегда в род. падеже мн. числа — пакеты 3/10/15, «1» здесь не бывает
   planFeaturesLabel:"Доступные вкладки:",
-  planBadge:"популярный",
+  planBadge:"выгоднее",
   infoTermsShort:"Полный текст условий оказания услуг и оплаты — в отдельном документе.",
   infoTermsLink:"Условия использования (публичная оферта) →",
   infoContactsH:"Контакты для связи и поддержки",
   infoContacts:["Email: mvbern8@gmail.com"],
+  // вход и оплата (paywall на вкладке «Графики»)
+  paywallTitle:"Вкладка «Графики» — платная",
+  paywallDesc:"Один разбор открывает график жизненных сил и периоды жизни для одного расчёта. Первый разбор — бесплатно.",
+  loginPrompt:"Войдите через Telegram, чтобы получить бесплатный разбор и учитывать баланс:",
+  btnUnlockFree:"Открыть бесплатно (1 разбор)",
+  btnUnlockCredit:n=>"Открыть за 1 разбор (в балансе: "+n+")",
+  buyMoreLabel:"Бесплатный разбор уже использован, в балансе нет разборов — выберите пакет:",
+  authGreeting:(name,credits)=>name+" · в балансе: "+readingsLabel(credits),
+  btnLogout:"Выйти",
+  errGeneric:"Не удалось выполнить действие. Попробуйте ещё раз чуть позже.",
+  buyButtonLabel:"Купить",
+  emailLabel:"Email для чека", emailPlaceholder:"you@example.com",
+  emailInvalidErr:"Укажите корректный email — на него придёт чек об оплате",
  },
  en:{
   pageTitle:"Pythagorean Square — test",
@@ -475,16 +516,29 @@ const STR = {
   noCellText:"No general text is prepared yet for this case.",
   // вкладка «Тарифы»
   infoPricingH:"Pricing",
-  planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"5 days",
-  planFreeDesc:"Trial access starting from your first calculation.",
-  planStdName:"Standard", planStdPrice:"299 ₽", planStdPeriod:"30 days",
-  planStdDesc:"A one-time payment unlocks access for 30 days (no auto-renewal or subscription), processed via YooKassa.",
+  planFreeName:"Free", planFreePrice:"$0", planFreePeriod:"forever",
+  planFreeDesc:"The “Numbers” and “Interpretation” tabs — unlimited. Plus one free reading that unlocks the “Charts” tab.",
+  packPeriod:"one-time, no expiry",
+  packDesc:n=>"Unlocks the “Charts” tab for "+n+" calculations.",
   planFeaturesLabel:"Included tabs:",
-  planBadge:"most popular",
+  planBadge:"best value",
   infoTermsShort:"The full terms of service and payment are available as a separate document.",
   infoTermsLink:"Terms of Use (public offer) →",
   infoContactsH:"Contacts for support",
   infoContacts:["Email: mvbern8@gmail.com"],
+  // login and payment (paywall on the "Charts" tab)
+  paywallTitle:"The “Charts” tab is paid",
+  paywallDesc:"One reading unlocks the life-force chart and life periods for one calculation. Your first reading is free.",
+  loginPrompt:"Log in with Telegram to get your free reading and keep track of your balance:",
+  btnUnlockFree:"Unlock for free (1 reading)",
+  btnUnlockCredit:n=>"Unlock for 1 reading (balance: "+n+")",
+  buyMoreLabel:"You've used your free reading and your balance is empty — pick a pack:",
+  authGreeting:(name,credits)=>name+" · balance: "+readingsLabel(credits),
+  btnLogout:"Log out",
+  errGeneric:"Couldn't complete that action. Please try again shortly.",
+  buyButtonLabel:"Buy",
+  emailLabel:"Email for the receipt", emailPlaceholder:"you@example.com",
+  emailInvalidErr:"Enter a valid email — your payment receipt will be sent there",
  }
 };
 function T(){return STR[LANG]}
@@ -511,6 +565,15 @@ function translit(w){
     return ch===up?t:(t.charAt(0).toLowerCase()+t.slice(1));
   }).join("");
 }
+/* русское склонение существительного после числительного: 1 разбор, 2 разбора, 5 разборов */
+function ruPlural(n,one,few,many){
+  n=Math.abs(n)%100;const n1=n%10;
+  if(n>10&&n<20)return many;
+  if(n1>1&&n1<5)return few;
+  if(n1===1)return one;
+  return many;
+}
+function readingsLabel(n){return LANG==="ru"?(n+" "+ruPlural(n,"разбор","разбора","разборов")):(n+" "+(n===1?"reading":"readings"))}
 const sumDigits=n=>String(n).split("").reduce((a,c)=>a+ +c,0);
 function reduce(n,masters=[11,22]){while(n>9&&!masters.includes(n))n=sumDigits(n);return n}
 function partSums(w,alpha){let a=0,v=0,c=0;for(const ch of w.toUpperCase().replace(/\s/g,"")){const x=alpha.LETTER[ch];if(!x)continue;a+=x;if(alpha.VOWELS.has(ch))v+=x;else if(!alpha.NEUTRAL.has(ch))c+=x}return[a,v,c]}
@@ -610,7 +673,7 @@ const OFERTA_PARAS = {
   "Настоящий документ является публичной офертой Марины Бобренко, самозанятой (плательщик налога на профессиональный доход) (далее — «Исполнитель») на оказание информационных услуг с использованием сервиса «Квадрат Пифагора» (далее — «Сервис»).",
   "1. Предмет. Исполнитель предоставляет Пользователю доступ к автоматическому расчёту нумерологической матрицы (квадрата Пифагора) по дате рождения и ФИО, а также текстовую трактовку полученных чисел.",
   "2. Характер услуг. Результаты расчёта носят информационно-развлекательный характер, не являются медицинской, психологической, юридической или финансовой консультацией и не заменяют профессиональную помощь.",
-  "3. Тарифы и оплата. Тариф «Free» действует 5 дней с первого расчёта и открывает доступ к вкладкам «Числа» и «Трактовка» бесплатно. Тариф «Standard» — разовый платёж 299 ₽, открывает доступ ко всем вкладкам (включая «Графики») на 30 дней. Оплата производится через платёжный сервис ЮKassa; автоматическое продление и повторное списание средств не предусмотрены — по истечении срока доступ продлевается повторной разовой оплатой.",
+  "3. Тарифы и оплата. Вкладки «Числа» и «Трактовка» доступны бесплатно и без ограничения по времени. Вкладка «Графики» открывается за 1 «разбор»: первый разбор для каждого пользователя — бесплатно, далее разборы приобретаются пакетами: 399 ₽ — 3 разбора, 999 ₽ — 10 разборов, 1399 ₽ — 15 разборов. Разборы не имеют срока действия и списываются по одному за каждый новый расчёт, для которого открывается вкладка «Графики». Для получения бесплатного разбора и учёта баланса используется вход через Telegram. Оплата производится через платёжный сервис Lava.top; автоматическое продление и повторное списание средств не предусмотрены.",
   "4. Возврат. Доступ к оплаченному тарифу предоставляется мгновенно после оплаты. Возврат средств возможен в случае технической ошибки, из-за которой доступ не был предоставлен, — по обращению в поддержку (см. «Контакты»).",
   "5. Персональные данные. Дата рождения и ФИО, введённые в форму, используются только для расчёта и не передаются третьим лицам, за исключением данных, необходимых платёжному сервису для обработки платежа.",
   "6. Согласие. Начиная использовать Сервис и/или производя оплату, Пользователь подтверждает согласие с условиями настоящей оферты. Действующая редакция всегда доступна на этой странице.",
@@ -620,7 +683,7 @@ const OFERTA_PARAS = {
   "This document is a public offer by Marina Bobrenko, a self-employed individual (professional-income taxpayer, Russia) (the “Provider”) to render information services using the “Pythagorean Square” service (the “Service”).",
   "1. Subject. The Provider gives the User access to an automated calculation of the numerology matrix (Pythagorean square) from a birth date and full name, together with a text interpretation of the resulting numbers.",
   "2. Nature of the service. The results are for informational and entertainment purposes only; they are not medical, psychological, legal or financial advice and do not replace professional help.",
-  "3. Plans and payment. The “Free” plan lasts 5 days from the first calculation and gives free access to the “Numbers” and “Interpretation” tabs. The “Standard” plan is a one-time payment of 299 ₽ that unlocks all tabs (including “Charts”) for 30 days. Payment is processed via the YooKassa payment service; there is no automatic renewal or recurring charge — after the period ends, access is renewed with another one-time payment.",
+  "3. Plans and payment. The “Numbers” and “Interpretation” tabs are free and available without a time limit. The “Charts” tab is unlocked with 1 “reading”: each user's first reading is free; further readings are bought in packs: 399 ₽ (≈$4.99) for 3 readings, 999 ₽ (≈$11.99) for 10 readings, 1399 ₽ (≈$15.99) for 15 readings. Readings do not expire and are spent one at a time, each time the “Charts” tab is unlocked for a new calculation. Logging in with Telegram is used to grant the free reading and keep track of the balance. Payment is processed via the Lava.top payment service; there is no automatic renewal or recurring charge.",
   "4. Refunds. Access to a paid plan is granted instantly after payment. A refund is possible if a technical error prevented access from being granted — by contacting support (see “Contacts”).",
   "5. Personal data. The birth date and name entered in the form are used only to perform the calculation and are not shared with third parties, except data required by the payment service to process the payment.",
   "6. Consent. By using the Service and/or making a payment, the User confirms agreement with the terms of this offer. The current version is always available on this page.",
@@ -646,27 +709,252 @@ function openOferta(){
   const win=window.open(url,"_blank");
   if(!win)location.href=url;
 }
+
+/* ---- вход через Telegram, баланс разборов, оплата пакетов (paywall на вкладке «Графики») ---- */
+let authState={loggedIn:false, telegramId:null, firstName:"", credits:0, freeUsed:false};
+let currentTabGraphsEl=null;
+let graphsUnlockedThisCalc=false;
+let buyerEmail=""; // remembered in memory only for this page load, never persisted
+
+function validEmail(v){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((v||"").trim())}
+function buildEmailField(){
+  const s=T();
+  const row=el("div");row.style.cssText="margin:4px 0 12px;display:flex;flex-direction:column;gap:4px;max-width:280px";
+  const label=el("span",null,s.emailLabel);label.style.cssText="font-size:13px;color:var(--muted)";
+  const input=el("input");input.type="email";input.placeholder=s.emailPlaceholder;input.value=buyerEmail;
+  input.addEventListener("input",()=>{buyerEmail=input.value});
+  row.append(label,input);
+  return {row,input};
+}
+
+async function apiGet(path){
+  const res=await fetch(API_BASE+path,{credentials:"include"});
+  return res;
+}
+async function apiPost(path,body){
+  const res=await fetch(API_BASE+path,{
+    method:"POST",credentials:"include",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(body||{}),
+  });
+  return res;
+}
+
+function setAuthFromServer(data){
+  authState={loggedIn:true, telegramId:data.telegram_id, firstName:data.first_name||data.username||"", credits:data.credits, freeUsed:!!data.free_used};
+}
+
+async function loadMe(){
+  try{
+    const res=await apiGet("/me");
+    if(res.ok){ setAuthFromServer(await res.json()) }
+  }catch(e){ /* бэкенд ещё не развёрнут или недоступен — остаёмся неавторизованными, без ошибки в UI */ }
+  refreshAuthBar();
+  renderGraphsTab();
+}
+
+function refreshAuthBar(){
+  const s=T(), bar=$("authbar"); if(!bar)return;
+  bar.replaceChildren();
+  if(authState.loggedIn){
+    bar.append(el("span","who",s.authGreeting(authState.firstName||"Telegram",authState.credits)));
+    const out=el("button",null,s.btnLogout); out.type="button"; out.className="linklike";
+    out.addEventListener("click",doLogout);
+    bar.append(out);
+  } else {
+    mountTelegramWidget(bar);
+  }
+}
+
+let tgWidgetScriptAdded=false;
+function mountTelegramWidget(container){
+  container.replaceChildren();
+  if(!TG_BOT_USERNAME||TG_BOT_USERNAME.indexOf("REPLACE_WITH")===0){
+    return; // бот ещё не настроен — виджет не показываем, чтобы не пугать пустой кнопкой
+  }
+  const holder=el("div"); holder.id="tgLoginHolder_"+Math.random().toString(36).slice(2);
+  container.append(holder);
+  const script=document.createElement("script");
+  script.async=true;
+  script.src="https://telegram.org/js/telegram-widget.js?22";
+  script.setAttribute("data-telegram-login",TG_BOT_USERNAME);
+  script.setAttribute("data-size","medium");
+  script.setAttribute("data-radius","8");
+  script.setAttribute("data-onauth","onTelegramAuth(user)");
+  script.setAttribute("data-request-access","write");
+  holder.append(script);
+}
+
+window.onTelegramAuth=async function(user){
+  try{
+    const res=await apiPost("/auth/telegram",user);
+    if(!res.ok)throw new Error("auth_failed");
+    setAuthFromServer(await res.json());
+    refreshAuthBar();
+    renderGraphsTab();
+  }catch(e){
+    $("err").textContent=T().errGeneric;
+  }
+};
+
+async function doLogout(){
+  try{ await apiPost("/logout") }catch(e){}
+  authState={loggedIn:false, telegramId:null, firstName:"", credits:0, freeUsed:false};
+  graphsUnlockedThisCalc=false;
+  refreshAuthBar();
+  renderGraphsTab();
+}
+
+async function doConsume(){
+  $("err").textContent="";
+  try{
+    const res=await apiPost("/consume");
+    if(res.ok){
+      const data=await res.json();
+      authState.credits=data.credits;
+      authState.freeUsed=true;
+      graphsUnlockedThisCalc=true;
+      refreshAuthBar();
+      renderGraphsTab();
+    } else if(res.status===402){
+      authState.freeUsed=true;
+      refreshAuthBar();
+      renderGraphsTab();
+    } else {
+      throw new Error("consume_failed");
+    }
+  }catch(e){
+    $("err").textContent=T().errGeneric;
+  }
+}
+
+async function doBuy(packKey,email){
+  $("err").textContent="";
+  try{
+    const res=await apiPost("/pay/create",{pack:packKey,lang:LANG,email:email});
+    if(!res.ok)throw new Error("pay_create_failed");
+    const data=await res.json();
+    location.href=data.confirmation_url;
+  }catch(e){
+    $("err").textContent=T().errGeneric;
+  }
+}
+
+function buildPacksUI(){
+  const s=T();
+  const wrap=el("div");
+  const {row,input}=buildEmailField();
+  wrap.append(row);
+  const btnRow=el("div","paywall-packs");
+  PACKS_INFO[LANG].forEach(p=>{
+    const btn=el("button",null,null); btn.type="button"; btn.className="pack-btn";
+    btn.append(el("b",null,s.buyButtonLabel+" · "+p.price));
+    btn.append(el("span",null,readingsLabel(p.credits)));
+    btn.addEventListener("click",()=>{
+      const email=input.value.trim();
+      if(!validEmail(email)){$("err").textContent=s.emailInvalidErr;input.focus();return}
+      buyerEmail=email;
+      doBuy(p.key,email);
+    });
+    btnRow.append(btn);
+  });
+  wrap.append(btnRow);
+  return wrap;
+}
+
+function buildGraphsPaywall(tab){
+  const s=T();
+  const box=el("div","txt");
+  box.append(el("h3",null,s.paywallTitle));
+  box.append(el("p",null,s.paywallDesc));
+  if(!authState.loggedIn){
+    box.append(el("p",null,s.loginPrompt));
+    const slot=el("div");box.append(slot);
+    mountTelegramWidget(slot);
+  } else if(!authState.freeUsed||authState.credits>0){
+    const label=!authState.freeUsed?s.btnUnlockFree:s.btnUnlockCredit(authState.credits);
+    const btn=el("button",null,label);btn.type="button";
+    btn.addEventListener("click",doConsume);
+    box.append(btn);
+  } else {
+    box.append(el("p",null,s.buyMoreLabel));
+    box.append(buildPacksUI());
+  }
+  tab.append(box);
+}
+
+function buildGraphsContent(tab,r){
+  const s=T(), THEME=LIB.theme[LANG];
+  tab.append(el("h2",null,s.hScore));
+  tab.append(el("p","sub",s.subScore1+r.personalCode+s.subScore2));
+  tab.append(buildLifepowerChart(r.personalCode));
+  tab.append(el("h2",null,s.hPeriods));
+  tab.append(el("p","sub",s.subPeriods));
+  const themeOf=v=>{if(v===0)return s.noDiff;const k=v<=9?v:mred(v,[]);return THEME[k]||k};
+  const fmtV=v=>[11,22,33].includes(v)?v+" ("+mred(v,[])+")":String(v);
+  tab.append(buildPinnacleChart(r.pinnacles));
+  const pt=el("table");const ph=el("tr");[s.thAge,s.thTask,s.thProblem].forEach(h=>ph.append(el("th",null,h)));pt.append(ph);
+  r.pinnacles.forEach(([a,b,P,C])=>{const tr=el("tr");
+    tr.append(el("td",null,a+"–"+(b===96?"96+":b)+s.yearsShort));
+    tr.append(el("td",null,fmtV(P)+" — "+themeOf(P)));
+    tr.append(el("td",null,fmtV(C)+" — "+themeOf(C)));
+    pt.append(tr)});
+  tab.append(pt);
+  tab.append(el("p","sub",s.subPeriodTrakt));
+  r.pinnacles.forEach(([a,b,P,C],i)=>{
+    const Pk=P<=9?P:mred(P,[]), Ck=C<=9?C:mred(C,[]);
+    const b1=textBlock(a+"–"+(b===96?"96+":b)+s.yearsShort+s.taskLabel+fmtV(P)+" ("+THEME[Pk]+")", [GEN.pinnacle_task[String(Pk)]||s.noText]);
+    tab.append(b1);
+    if(C>0){const b2=textBlock(s.problemLabel+fmtV(C)+" ("+THEME[Ck]+")", [GEN.pinnacle_challenge[String(Ck)]||s.noText]);tab.append(b2)}
+  });
+}
+
+function renderGraphsTab(){
+  const tab=currentTabGraphsEl;
+  if(!tab||!lastResult)return;
+  tab.replaceChildren();
+  if(graphsUnlockedThisCalc){
+    buildGraphsContent(tab,lastResult);
+  } else {
+    buildGraphsPaywall(tab);
+  }
+}
 function buildInfoTab(){
   const s=T();
   const tab=el("div","tabpanel");tab.id="tab-info";
   tab.append(el("h2",null,s.infoPricingH));
 
+  const {row:emailRow,input:emailInput}=buildEmailField();
+
   const wrap=el("div","plans");
-  const freeFeat=[s.tabNums,s.tabTrakt];
-  const stdFeat=[s.tabNums,s.tabTrakt,s.tabGraphs];
-  const mkPlan=(hl,name,price,period,desc,feat)=>{
+  const mkPlan=(hl,name,price,period,desc,buyKey)=>{
     const p=el("div","plan"+(hl?" hl":""));
     if(hl)p.append(el("span","badge",s.planBadge));
     p.append(el("h3",null,name));
     p.append(el("div","plan-price",price));
     p.append(el("div","plan-period",period));
     p.append(el("div","plan-desc",desc));
-    p.append(el("div","plan-feat-label",s.planFeaturesLabel));
-    const ul=el("ul");feat.forEach(f=>ul.append(el("li",null,f)));p.append(ul);
+    if(buyKey){
+      const btn=el("button",null,s.buyButtonLabel);btn.type="button";
+      const loginSlot=el("div");loginSlot.style.marginTop="8px";
+      btn.addEventListener("click",()=>{
+        if(!authState.loggedIn){mountTelegramWidget(loginSlot);return}
+        const email=emailInput.value.trim();
+        if(!validEmail(email)){$("err").textContent=s.emailInvalidErr;emailInput.focus();return}
+        buyerEmail=email;
+        doBuy(buyKey,email);
+      });
+      p.append(btn);p.append(loginSlot);
+    } else {
+      const ul=el("ul");[s.tabNums,s.tabTrakt].forEach(f=>ul.append(el("li",null,f)));p.append(ul);
+    }
     return p;
   };
-  wrap.append(mkPlan(false,s.planFreeName,s.planFreePrice,s.planFreePeriod,s.planFreeDesc,freeFeat));
-  wrap.append(mkPlan(true,s.planStdName,s.planStdPrice,s.planStdPeriod,s.planStdDesc,stdFeat));
+  tab.append(emailRow);
+  wrap.append(mkPlan(false,s.planFreeName,s.planFreePrice,s.planFreePeriod,s.planFreeDesc,null));
+  PACKS_INFO[LANG].forEach(pk=>{
+    wrap.append(mkPlan(!!pk.best, readingsLabel(pk.credits), pk.price, s.packPeriod, s.packDesc(pk.credits), pk.key));
+  });
   tab.append(wrap);
 
   const termsBox=el("div","txt");
@@ -705,29 +993,10 @@ function render(r){
     const c=r.cnt[n]||0;const cell=el("div",c?"has":null,c?String(n).repeat(c):"–");cell.append(el("small",null,n+" · "+THEME[n]));g.append(cell)});
   tabNums.append(g);
 
-  // === вкладка «Графики»: волна жизненных сил + пики/вызовы (график + таблица, без текста) ===
-  tabGraphs.append(el("h2",null,s.hScore));
-  tabGraphs.append(el("p","sub",s.subScore1+r.personalCode+s.subScore2));
-  tabGraphs.append(buildLifepowerChart(r.personalCode));
-  tabGraphs.append(el("h2",null,s.hPeriods));
-  tabGraphs.append(el("p","sub",s.subPeriods));
-  const themeOf=v=>{if(v===0)return s.noDiff;const k=v<=9?v:mred(v,[]);return THEME[k]||k};
-  const fmtV=v=>[11,22,33].includes(v)?v+" ("+mred(v,[])+")":String(v);
-  tabGraphs.append(buildPinnacleChart(r.pinnacles));
-  const pt=el("table");const ph=el("tr");[s.thAge,s.thTask,s.thProblem].forEach(h=>ph.append(el("th",null,h)));pt.append(ph);
-  r.pinnacles.forEach(([a,b,P,C])=>{const tr=el("tr");
-    tr.append(el("td",null,a+"–"+(b===96?"96+":b)+s.yearsShort));
-    tr.append(el("td",null,fmtV(P)+" — "+themeOf(P)));
-    tr.append(el("td",null,fmtV(C)+" — "+themeOf(C)));
-    pt.append(tr)});
-  tabGraphs.append(pt);
-  tabGraphs.append(el("p","sub",s.subPeriodTrakt));
-  r.pinnacles.forEach(([a,b,P,C],i)=>{
-    const Pk=P<=9?P:mred(P,[]), Ck=C<=9?C:mred(C,[]);
-    const b1=textBlock(a+"–"+(b===96?"96+":b)+s.yearsShort+s.taskLabel+fmtV(P)+" ("+THEME[Pk]+")", [GEN.pinnacle_task[String(Pk)]||s.noText]);
-    tabGraphs.append(b1);
-    if(C>0){const b2=textBlock(s.problemLabel+fmtV(C)+" ("+THEME[Ck]+")", [GEN.pinnacle_challenge[String(Ck)]||s.noText]);tabGraphs.append(b2)}
-  });
+  // === вкладка «Графики»: платная, доступ через renderGraphsTab()/buildGraphsContent() ===
+  currentTabGraphsEl=tabGraphs;
+  graphsUnlockedThisCalc=false;
+  renderGraphsTab();
 
   // === вкладка «Трактовка»: именные числа, ячейки квадрата ===
   tabTrakt.append(el("h2",null,s.hInterpNums));
@@ -784,6 +1053,7 @@ function applyStaticLang(){
   $("nameHint").textContent=s.nameHint;
   document.documentElement.lang=LANG;
   $("langbar").querySelectorAll(".langbtn").forEach(b=>b.classList.toggle("active",b.dataset.lang===LANG));
+  refreshAuthBar();
 }
 let fieldsByLang={};
 $("langbar").addEventListener("click",e=>{
@@ -817,5 +1087,6 @@ $("f").addEventListener("submit",e=>{e.preventDefault();$("err").textContent="";
 });
 applyStaticLang();
 $("f").requestSubmit();
+loadMe();
 </script>
 </body></html>
