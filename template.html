@@ -1,0 +1,787 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title id="pageTitle">Квадрат Пифагора — тест</title>
+<style>
+  :root{--bg:#faf9f7;--fg:#1f1d1a;--muted:#6b665f;--card:#fff;--line:#e2ded7;--accent:#8a4b2d;--hi:#f3e6dc}
+  @media (prefers-color-scheme:dark){:root{--bg:#191816;--fg:#ece8e1;--muted:#a49e94;--card:#232220;--line:#3a3733;--accent:#e0a17c;--hi:#33271f}}
+  *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,"Segoe UI",sans-serif}
+  main{max-width:880px;margin:0 auto;padding:24px 16px 64px}
+  h1{font-size:22px;margin:0 0 4px} h2{font-size:17px;margin:28px 0 10px} .sub{color:var(--muted);margin:0 0 20px;font-size:14px}
+  .topbar{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .langbar{display:flex;gap:2px;border:1px solid var(--line);border-radius:8px;overflow:hidden;flex:none}
+  .langbtn{font:inherit;font-size:13px;background:var(--card);color:var(--muted);border:0;padding:6px 12px;cursor:pointer}
+  .langbtn.active{background:var(--accent);color:#fff}
+  form{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+  label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}
+  input,select{font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+  button{font:inherit;background:var(--accent);color:#fff;border:0;border-radius:8px;padding:9px 16px;cursor:pointer;align-self:end}
+  .err{color:#b3261e;margin-top:10px;font-size:14px}
+  .hint{color:var(--muted);margin:8px 0 0;font-size:13px}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:0;max-width:480px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--card)}
+  .grid3 div{padding:18px 8px;text-align:center;font-size:22px;font-weight:600;border:1px solid var(--line);margin:-1px 0 0 -1px;min-height:88px;display:flex;flex-direction:column;justify-content:center}
+  .grid3 small{font-size:11px;font-weight:400;color:var(--muted)}
+  .grid3 .has{background:var(--hi)}
+  table{border-collapse:collapse;background:var(--card);border:1px solid var(--line);border-radius:8px;font-size:14px}
+  th,td{padding:6px 12px;border:1px solid var(--line);text-align:center} th:first-child,td:first-child{text-align:left}
+  .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:15px} .kv b{font-variant-numeric:tabular-nums}
+  .row{display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start}
+  .txt{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:12px 16px;margin:0 0 10px}
+  .txt h3{margin:0 0 6px;font-size:15px;color:var(--accent)} .txt p{margin:0 0 8px;font-size:14.5px} .none{color:var(--muted);font-size:14px;font-style:italic}
+  details{margin-top:12px} summary{cursor:pointer;color:var(--muted);font-size:14px}
+  .tabbar{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:24px 0 18px;flex-wrap:wrap}
+  .tabbtn{font:inherit;font-size:15px;background:none;border:0;padding:10px 14px;cursor:pointer;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+  .tabbtn:hover{color:var(--fg)}
+  .tabbtn.active{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+  .tabpanel{display:none}
+  .tabpanel.active{display:block}
+  .price{font-size:20px;font-weight:700;color:var(--accent)}
+  .legal p{margin:0 0 10px;font-size:14.5px}
+  .legal ol{padding-left:20px;margin:0 0 10px}
+  .legal li{margin:0 0 8px;font-size:14.5px}
+  .plans{display:flex;flex-wrap:wrap;gap:16px;margin:0 0 10px}
+  .plan{flex:1 1 220px;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:18px 20px;position:relative}
+  .plan.hl{border-color:var(--accent)}
+  .plan .badge{position:absolute;top:-11px;right:16px;background:var(--accent);color:#fff;font-size:11px;font-weight:600;padding:3px 10px;border-radius:99px;text-transform:uppercase;letter-spacing:.02em}
+  .plan h3{margin:0 0 2px;font-size:16px}
+  .plan .plan-price{font-size:26px;font-weight:800;color:var(--accent);margin:6px 0 0}
+  .plan .plan-period{font-size:13px;color:var(--muted);margin:0 0 10px}
+  .plan .plan-desc{font-size:13.5px;color:var(--muted);margin:0 0 12px}
+  .plan .plan-feat-label{font-size:12.5px;color:var(--muted);margin:0 0 4px;text-transform:uppercase;letter-spacing:.02em}
+  .plan ul{margin:0;padding-left:18px;font-size:14.5px}
+  .plan li{margin:0 0 4px}
+  .terms-link{font-size:14.5px}
+  .terms-link a{color:var(--accent);font-weight:600;text-decoration:none}
+  .terms-link a:hover{text-decoration:underline}
+  .authbar{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted);flex:none}
+  .authbar .who{white-space:nowrap}
+  .authbar button{padding:6px 12px;font-size:13px;align-self:auto}
+  .authbar .linklike{background:none;border:0;color:var(--accent);cursor:pointer;padding:0;font:inherit;text-decoration:underline}
+  .paywall-packs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+  .paywall-packs button{align-self:auto}
+  .pack-btn{display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 14px}
+  .pack-btn b{font-size:15px}
+  .pack-btn span{font-size:12px;opacity:.85;font-weight:400}
+</style>
+</head>
+<body><main>
+<div class="topbar">
+  <div>
+    <h1 id="h1Title">Квадрат Пифагора по дате и ФИО</h1>
+    <p class="sub" id="subText">Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.</p>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+    <div class="langbar" id="langbar">
+      <button type="button" class="langbtn" data-lang="ru">RU</button>
+      <button type="button" class="langbtn" data-lang="en">EN</button>
+    </div>
+    <div class="authbar" id="authbar"></div>
+  </div>
+</div>
+
+<form id="f">
+  <label><span id="lblSurname">Фамилия</span><input id="s" value="Бобренко" required></label>
+  <label><span id="lblName">Имя</span><input id="n" value="Марина" required></label>
+  <label><span id="lblPatr">Отчество</span><input id="p" value="Николаевна" required></label>
+  <label><span id="lblDate">Дата рождения</span><input id="d" value="22.02.1984" placeholder="ДД.ММ.ГГГГ" required pattern="\d{1,2}\.\d{1,2}\.\d{4}"></label>
+  <button id="btnCalc">Рассчитать</button>
+</form>
+<p class="hint" id="nameHint"></p>
+<div class="err" id="err"></div>
+<div id="out"></div>
+</main>
+<script>
+const GEN_ALL = /*GENDATA*/;
+let LANG = "ru";
+let GEN = GEN_ALL[LANG];
+const LIB = {theme:{
+  ru:{1:"целеустремлённость",2:"энергия, эмоции",3:"цель, творчество",4:"упёртость, достижение цели",5:"здоровье, движение, путешествия",6:"семья",7:"интуиция, защита свыше",8:"деньги, финансы",9:"долги, помощь, родственники"},
+  en:{1:"drive, willpower",2:"energy, emotions",3:"purpose, creativity",4:"persistence, achieving goals",5:"health, movement, travel",6:"family",7:"intuition, higher protection",8:"money, finances",9:"debts, help, relatives"}
+}};
+
+/* ---- оплата и вход через Telegram: конфиг, меняется при развёртывании ---- */
+const API_BASE = "/api"; // бэкенд должен быть на том же домене, что и страница
+const TG_BOT_USERNAME = "AstroNumeros_bot"; // username бота из @BotFather, без @
+const PACKS_INFO = {
+  ru:[
+    {key:"pack3", credits:3, price:"399 ₽"},
+    {key:"pack10", credits:10, price:"999 ₽", best:true},
+    {key:"pack15", credits:15, price:"1399 ₽"},
+  ],
+  en:[
+    {key:"pack3", credits:3, price:"$5.99"},
+    {key:"pack10", credits:10, price:"$11.99", best:true},
+    {key:"pack15", credits:15, price:"$15.99"},
+  ],
+};
+
+/* ---- строковые ресурсы интерфейса (RU/EN) ---- */
+const STR = {
+ ru:{
+  pageTitle:"Квадрат Пифагора — тест",
+  h1:"Квадрат Пифагора по дате и ФИО",
+  sub:"Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.",
+  lblSurname:"Фамилия", lblName:"Имя", lblPatr:"Отчество", lblDate:"Дата рождения",
+  datePlaceholder:"ДД.ММ.ГГГГ", btnCalc:"Рассчитать",
+  nameHint:"",
+  errDate:"Дата должна быть в формате ДД.ММ.ГГГГ",
+  errLetters:"Фамилия, имя и отчество должны содержать русские буквы",
+  tabNums:"Числа", tabTrakt:"Трактовка", tabGraphs:"Графики", tabInfo:"Тарифы",
+  heroPrefix:"Основная цифра: ",
+  hAddNums:"Дополнительные цифры",
+  kvDay:"День рождения", kvMonth:"Месяц", kvYear:"Год", kvLesson:"Суммарно", kvCode:"Личный код",
+  hSquare:"Квадрат (дополнительные цифры по ячейкам)",
+  hScore:"Баллы (график жизненных сил)",
+  subScore1:"Волна строится из цифр личного кода (", subScore2:"), растянутых на возраст 0–96 лет. Сверено с исходным калькулятором.",
+  hPeriods:"Периоды жизни (задачи и проблемы по возрасту)",
+  subPeriods:"Жизнь делится на 4 периода разной длины. У каждого — своя главная тема (сверху на графике) и трудность, с которой она связана (в кружке).",
+  thAge:"Возраст", thTask:"Задача (тема периода)", thProblem:"Проблема (тема периода)",
+  yearsShort:" лет",
+  noDiff:"нет разницы",
+  subPeriodTrakt:"Задача — то, что нужно развить и решить в этот период; проблема — то, что этому мешает.",
+  taskLabel:" — задача: ", problemLabel:"...проблема периода: ",
+  noText:"Текст не подготовлен.",
+  hInterpNums:"Интерпретация: числа",
+  roleDay:"Число дня рождения", roleLesson:"Жизненный урок", roleSoul:"Число Душевного Побуждения",
+  rolePersonality:"Число Личности", roleDestiny:"Число Судьбы",
+  noRoleText:v=>"Для значения "+v+" общий текст не подготовлен.",
+  hInterpCells:"Интерпретация по ячейкам",
+  subCells:"Трактовка зависит не от самой цифры, а от того, сколько раз она встретилась: 0 — урок (качества не хватает), 1 — обычная мера, 2 — выраженный талант, 3 — очень сильно, 4 и больше — избыток.",
+  none:"нет",
+  noCellText:"Общий текст для этого случая не подготовлен.",
+  // вкладка «Тарифы»
+  infoPricingH:"Тарифы",
+  planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"навсегда",
+  planFreeDesc:"Вкладки «Числа» и «Трактовка» — без ограничений. Плюс один бесплатный разбор с открытием вкладки «Графики».",
+  packPeriod:"разово, без срока действия",
+  packDesc:n=>"Открывает вкладку «Графики» для "+n+" расчётов.", // после «для» число всегда в род. падеже мн. числа — пакеты 3/10/15, «1» здесь не бывает
+  planFeaturesLabel:"Доступные вкладки:",
+  planBadge:"выгоднее",
+  infoTermsShort:"Полный текст условий оказания услуг и оплаты — в отдельном документе.",
+  infoTermsLink:"Условия использования (публичная оферта) →",
+  infoContactsH:"Контакты для связи и поддержки",
+  infoContacts:["Email: mvbern8@gmail.com"],
+  // вход и оплата (paywall на вкладке «Графики»)
+  paywallTitle:"Вкладка «Графики» — платная",
+  paywallDesc:"Один разбор открывает график жизненных сил и периоды жизни для одного расчёта. Первый разбор — бесплатно.",
+  loginPrompt:"Войдите через Telegram, чтобы получить бесплатный разбор и учитывать баланс:",
+  btnUnlockFree:"Открыть бесплатно (1 разбор)",
+  btnUnlockCredit:n=>"Открыть за 1 разбор (в балансе: "+n+")",
+  buyMoreLabel:"Бесплатный разбор уже использован, в балансе нет разборов — выберите пакет:",
+  authGreeting:(name,credits)=>name+" · в балансе: "+readingsLabel(credits),
+  btnLogout:"Выйти",
+  errGeneric:"Не удалось выполнить действие. Попробуйте ещё раз чуть позже.",
+  buyButtonLabel:"Купить",
+  emailLabel:"Email для чека", emailPlaceholder:"you@example.com",
+  emailInvalidErr:"Укажите корректный email — на него придёт чек об оплате",
+ },
+ en:{
+  pageTitle:"Pythagorean Square — test",
+  h1:"Pythagorean Square by birth date and name",
+  sub:"Birth date and full name — Pythagorean square, life periods, and number interpretations.",
+  lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic (optional)", lblDate:"Date of birth",
+  datePlaceholder:"DD.MM.YYYY", btnCalc:"Calculate",
+  nameHint:"",
+  errDate:"The date must be in DD.MM.YYYY format",
+  errLetters:"Last name, first name and patronymic must contain Latin letters",
+  tabNums:"Numbers", tabTrakt:"Interpretation", tabGraphs:"Charts", tabInfo:"Pricing",
+  heroPrefix:"Main number: ",
+  hAddNums:"Additional numbers",
+  kvDay:"Day of birth", kvMonth:"Month", kvYear:"Year", kvLesson:"Total", kvCode:"Personal code",
+  hSquare:"Square (additional numbers by cell)",
+  hScore:"Score (life-force chart)",
+  subScore1:"The wave is built from the digits of the personal code (", subScore2:"), stretched across ages 0–96. Checked against the original calculator.",
+  hPeriods:"Life periods (pinnacles and challenges by age)",
+  subPeriods:"Life is split into 4 periods of different lengths. Each has its own main theme (above the chart) and a difficulty tied to it (in the circle).",
+  thAge:"Age", thTask:"Pinnacle (period theme)", thProblem:"Challenge (period theme)",
+  yearsShort:"",
+  noDiff:"no difference",
+  subPeriodTrakt:"The task is what to develop and work through in this period; the challenge is what stands in the way.",
+  taskLabel:" — pinnacle: ", problemLabel:"...challenge of the period: ",
+  noText:"Text not prepared yet.",
+  hInterpNums:"Interpretation: numbers",
+  roleDay:"Day of Birth Number", roleLesson:"Life Lesson", roleSoul:"Soul Urge Number",
+  rolePersonality:"Personality Number", roleDestiny:"Destiny Number",
+  noRoleText:v=>"No general text is prepared yet for value "+v+".",
+  hInterpCells:"Interpretation by square cells",
+  subCells:"The interpretation depends not on the digit itself, but on how many times it appears: 0 — a lesson (the quality is lacking), 1 — an ordinary measure, 2 — a pronounced talent, 3 — very strong, 4 or more — excess.",
+  none:"none",
+  noCellText:"No general text is prepared yet for this case.",
+  // вкладка «Тарифы»
+  infoPricingH:"Pricing",
+  planFreeName:"Free", planFreePrice:"$0", planFreePeriod:"forever",
+  planFreeDesc:"The “Numbers” and “Interpretation” tabs — unlimited. Plus one free reading that unlocks the “Charts” tab.",
+  packPeriod:"one-time, no expiry",
+  packDesc:n=>"Unlocks the “Charts” tab for "+n+" calculations.",
+  planFeaturesLabel:"Included tabs:",
+  planBadge:"best value",
+  infoTermsShort:"The full terms of service and payment are available as a separate document.",
+  infoTermsLink:"Terms of Use (public offer) →",
+  infoContactsH:"Contacts for support",
+  infoContacts:["Email: mvbern8@gmail.com"],
+  // login and payment (paywall on the "Charts" tab)
+  paywallTitle:"The “Charts” tab is paid",
+  paywallDesc:"One reading unlocks the life-force chart and life periods for one calculation. Your first reading is free.",
+  loginPrompt:"Log in with Telegram to get your free reading and keep track of your balance:",
+  btnUnlockFree:"Unlock for free (1 reading)",
+  btnUnlockCredit:n=>"Unlock for 1 reading (balance: "+n+")",
+  buyMoreLabel:"You've used your free reading and your balance is empty — pick a pack:",
+  authGreeting:(name,credits)=>name+" · balance: "+readingsLabel(credits),
+  btnLogout:"Log out",
+  errGeneric:"Couldn't complete that action. Please try again shortly.",
+  buyButtonLabel:"Buy",
+  emailLabel:"Email for the receipt", emailPlaceholder:"you@example.com",
+  emailInvalidErr:"Enter a valid email — your payment receipt will be sent there",
+ }
+};
+function T(){return STR[LANG]}
+
+/* ---- расчёт (порт pifagor_calc.py) ---- */
+const ROWS=["АИСЪ","БЙТЫ","ВКУЬ","ГЛФЭ","ДМХЮ","ЕНЦЯ","ЁОЧ","ЖПШ","ЗРЩ"];
+const LETTER={}; ROWS.forEach((r,i)=>[...r].forEach(c=>LETTER[c]=i+1));
+const VOWELS=new Set([..."АЕЁИОУЫЭЮЯ"]), NEUTRAL=new Set([..."ЬЪЙ"]);
+/* Латинская версия той же схемы Пифагора (та же методика 1-9, но по латинскому алфавиту) */
+const ROWS_EN=["AJS","BKT","CLU","DMV","ENW","FOX","GPY","HQZ","IR"];
+const LETTER_EN={}; ROWS_EN.forEach((r,i)=>[...r].forEach(c=>LETTER_EN[c]=i+1));
+const VOWELS_EN=new Set([..."AEIOU"]), NEUTRAL_EN=new Set();
+const ALPHA={
+  ru:{LETTER,VOWELS,NEUTRAL},
+  en:{LETTER:LETTER_EN,VOWELS:VOWELS_EN,NEUTRAL:NEUTRAL_EN}
+};
+/* транслитерация кириллицы в латиницу — для автозаполнения полей при переключении на английский */
+const TRANSLIT_MAP={А:"A",Б:"B",В:"V",Г:"G",Д:"D",Е:"E",Ё:"E",Ж:"Zh",З:"Z",И:"I",Й:"Y",К:"K",Л:"L",М:"M",Н:"N",О:"O",П:"P",Р:"R",С:"S",Т:"T",У:"U",Ф:"F",Х:"Kh",Ц:"Ts",Ч:"Ch",Ш:"Sh",Щ:"Shch",Ъ:"",Ы:"Y",Ь:"",Э:"E",Ю:"Yu",Я:"Ya"};
+function translit(w){
+  return [...(w||"")].map(ch=>{
+    const up=ch.toUpperCase();
+    const t=TRANSLIT_MAP[up];
+    if(t===undefined)return ch;
+    return ch===up?t:(t.charAt(0).toLowerCase()+t.slice(1));
+  }).join("");
+}
+/* русское склонение существительного после числительного: 1 разбор, 2 разбора, 5 разборов */
+function ruPlural(n,one,few,many){
+  n=Math.abs(n)%100;const n1=n%10;
+  if(n>10&&n<20)return many;
+  if(n1>1&&n1<5)return few;
+  if(n1===1)return one;
+  return many;
+}
+function readingsLabel(n){return LANG==="ru"?(n+" "+ruPlural(n,"разбор","разбора","разборов")):(n+" "+(n===1?"reading":"readings"))}
+const sumDigits=n=>String(n).split("").reduce((a,c)=>a+ +c,0);
+function reduce(n,masters=[11,22]){while(n>9&&!masters.includes(n))n=sumDigits(n);return n}
+function partSums(w,alpha){let a=0,v=0,c=0;for(const ch of w.toUpperCase().replace(/\s/g,"")){const x=alpha.LETTER[ch];if(!x)continue;a+=x;if(alpha.VOWELS.has(ch))v+=x;else if(!alpha.NEUTRAL.has(ch))c+=x}return[a,v,c]}
+const mred=(n,mm=[11,22,33])=>{while(n>9&&!mm.includes(n))n=sumDigits(n);return n};
+function calc(dateStr,S,N,P,mode,lang){
+  const alpha=ALPHA[lang||"ru"];
+  const [dd,mm,yy]=dateStr.split(".").map(Number);
+  const D=reduce(dd,[]),M=reduce(mm,[]),Y=reduce(yy,[]),d4=reduce(D+M+Y,[]);
+  const raw={фамилия:partSums(S,alpha),имя:partSums(N,alpha),отчество:partSums(P,alpha)};
+  const table={};for(const k in raw)table[k]=raw[k].map(x=>reduce(x));
+  const tot=[0,1,2].map(i=>Object.values(raw).reduce((a,r)=>a+r[i],0));
+  const destiny=reduce(tot[0]),soul=reduce(tot[1]),personality=reduce(tot[2]);
+  const d5=reduce(destiny,[]),main=reduce(d4+d5,[]);
+  const nine=Object.values(table).flat().map(x=>reduce(x,[]));
+  let pool=[...nine]; if(mode!=="nine")pool.push(D,M,Y);
+  if(mode==="all17")pool.push(...[destiny,soul,personality].map(x=>reduce(x,[])),d4,main);
+  const cnt={};pool.forEach(x=>cnt[x]=(cnt[x]||0)+1);
+  // график "Задачи/проблемы" (пики и вызовы): проверено на 11 датах с lifexpert.ru
+  const P1=mred(M+D),C1=mred(Math.abs(M-D));
+  const P2=mred(D+Y),C2=mred(Math.abs(D-Y));
+  const P3=mred(P1+P2),C3=mred(Math.abs(C1-C2));
+  const P4=mred(M+Y),C4=mred(Math.abs(M-Y));
+  let need=D+M+Y; while(need>10&&![11,22,33].includes(need))need=sumDigits(need);
+  const t1=36-need,t2=t1+9,t3=t2+9;
+  const pinnacles=[[0,t1,P1,C1],[t1,t2,P2,C2],[t2,t3,P3,C3],[t3,96,P4,C4]];
+  // личный код: год × месяц × день рождения (без свёртки) — сверено с калькулятором сайта
+  const personalCode=yy*mm*dd;
+  return{D,M,Y,d4,d5,main,destiny,soul,personality,table,cnt,pinnacles,personalCode};
+}
+
+/* ---- вывод ---- */
+const $=id=>document.getElementById(id);
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function textBlock(title,paras){const b=el("div","txt");b.append(el("h3",null,title));paras.forEach(t=>b.append(el("p",null,t)));return b}
+const SVGNS="http://www.w3.org/2000/svg";
+function svgEl(tag,attrs){const e=document.createElementNS(SVGNS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e}
+function buildLifepowerChart(personalCode){
+  const W=760,H=190,pad=34,base=H-34,top=16;
+  const ageTicks=[0,12,24,36,48,60,72,84,96];
+  const x=age=>pad+(age/96)*(W-2*pad);
+  const y=v=>base-(v/9)*(base-top);
+  let digits=String(personalCode).split("").map(Number);
+  digits=digits.concat(digits.slice(0,Math.max(0,9-digits.length)));
+  digits=digits.slice(0,9);
+  const wrap=document.createElement("div");wrap.style.cssText="overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 4px";
+  const svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",height:H,style:"display:block;min-width:520px"});
+  svg.append(svgEl("line",{x1:pad,y1:base,x2:W-pad,y2:base,stroke:"var(--line)","stroke-width":1}));
+  for(let v=0;v<=9;v+=3){
+    const yt=svgEl("text",{x:pad-8,y:y(v)+4,"text-anchor":"end",style:"font-size:10px;fill:var(--muted)"});yt.textContent=v;svg.append(yt);
+  }
+  ageTicks.forEach(a=>{
+    svg.append(svgEl("line",{x1:x(a),y1:base,x2:x(a),y2:base+5,stroke:"var(--muted)","stroke-width":1}));
+    const t=svgEl("text",{x:x(a),y:base+18,"text-anchor":"middle",style:"font-size:11px;fill:var(--muted)"});t.textContent=a===0?"0":a+T().yearsShort;svg.append(t)});
+  const pts=ageTicks.map((a,i)=>[x(a),y(digits[i]||0)]);
+  const d=pts.map((p,i)=>(i===0?"M":"L")+p[0]+","+p[1]).join(" ");
+  svg.append(svgEl("path",{d,fill:"none",stroke:"#8a4b2d","stroke-width":2}));
+  pts.forEach(([px,py],i)=>{
+    svg.append(svgEl("circle",{cx:px,cy:py,r:3,fill:"#8a4b2d"}));
+    const t=svgEl("text",{x:px,y:py-8,"text-anchor":"middle",style:"font-size:11px;fill:#8a4b2d;font-weight:700"});t.textContent=digits[i]||0;svg.append(t)});
+  wrap.append(svg);return wrap;
+}
+function buildPinnacleChart(pinnacles){
+  const W=760,H=190,pad=34,base=H-34,peak=46;
+  const x=age=>pad+(age/96)*(W-2*pad);
+  const wrap=document.createElement("div");wrap.style.cssText="overflow-x:auto;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:8px 4px";
+  const svg=svgEl("svg",{viewBox:"0 0 "+W+" "+H,width:"100%",height:H,style:"display:block;min-width:520px"});
+  svg.append(svgEl("line",{x1:pad,y1:base,x2:W-pad,y2:base,stroke:"var(--line)","stroke-width":1}));
+  const ages=[0,...pinnacles.map(p=>p[1])];
+  ages.forEach(a=>{
+    svg.append(svgEl("line",{x1:x(a),y1:base,x2:x(a),y2:base+5,stroke:"var(--muted)","stroke-width":1}));
+    const t=svgEl("text",{x:x(a),y:base+18,"text-anchor":"middle",style:"font-size:11px;fill:var(--muted)"});t.textContent=a===0?"0":(a>=96?"96+":a)+(a?T().yearsShort:"");svg.append(t)});
+  const colors=["#8a4b2d","#b0663f","#8a4b2d","#b0663f"];
+  pinnacles.forEach(([a,b,P,C],i)=>{
+    const x1=x(a),x2=x(Math.min(b,96)),xm=(x1+x2)/2,col=colors[i%colors.length];
+    const path=svgEl("path",{d:`M ${x1} ${base} Q ${xm} ${peak} ${x2} ${base} Z`,fill:col,"fill-opacity":"0.16",stroke:col,"stroke-width":2});
+    svg.append(path);
+    const pt=svgEl("text",{x:xm,y:peak+4,"text-anchor":"middle",style:"font-size:17px;font-weight:700;fill:"+col});pt.textContent=[11,22,33].includes(P)?P+"("+ (P<=9?P:0)+")":P;svg.append(pt);
+    if(C>0){
+      const cy=base-14;
+      svg.append(svgEl("circle",{cx:xm,cy,r:10,fill:"var(--bg)",stroke:col,"stroke-width":1.5}));
+      const ct=svgEl("text",{x:xm,y:cy+4,"text-anchor":"middle",style:"font-size:11px;fill:"+col});ct.textContent=C;svg.append(ct);
+    }
+  });
+  wrap.append(svg);return wrap;
+}
+/* ---- оферта: строится как отдельный самостоятельный HTML-документ и открывается
+   через Blob-URL — так ссылка работает и в превью, и без второго файла рядом ---- */
+const OFERTA_CSS = ":root{--bg:#faf9f7;--fg:#1f1d1a;--muted:#6b665f;--card:#fff;--line:#e2ded7;--accent:#8a4b2d}"
+ +"@media (prefers-color-scheme:dark){:root{--bg:#191816;--fg:#ece8e1;--muted:#a49e94;--card:#232220;--line:#3a3733;--accent:#e0a17c}}"
+ +"*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.6 system-ui,'Segoe UI',sans-serif}"
+ +"main{max-width:720px;margin:0 auto;padding:24px 16px 64px}h1{font-size:21px;margin:0 0 4px}"
+ +".sub{color:var(--muted);margin:0 0 24px;font-size:14px}"
+ +".doc{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 22px}"
+ +".doc p{margin:0 0 14px;font-size:15px}.doc p:last-child{margin-bottom:0}";
+const OFERTA_PARAS = {
+ ru:[
+  "Настоящий документ является публичной офертой Марины Бобренко, самозанятой (плательщик налога на профессиональный доход) (далее — «Исполнитель») на оказание информационных услуг с использованием сервиса «Квадрат Пифагора» (далее — «Сервис»).",
+  "1. Предмет. Исполнитель предоставляет Пользователю доступ к автоматическому расчёту нумерологической матрицы (квадрата Пифагора) по дате рождения и ФИО, а также текстовую трактовку полученных чисел.",
+  "2. Характер услуг. Результаты расчёта носят информационно-развлекательный характер, не являются медицинской, психологической, юридической или финансовой консультацией и не заменяют профессиональную помощь.",
+  "3. Тарифы и оплата. Вкладки «Числа» и «Трактовка» доступны бесплатно и без ограничения по времени. Вкладка «Графики» открывается за 1 «разбор»: первый разбор для каждого пользователя — бесплатно, далее разборы приобретаются пакетами: 399 ₽ — 3 разбора, 999 ₽ — 10 разборов, 1399 ₽ — 15 разборов. Разборы не имеют срока действия и списываются по одному за каждый новый расчёт, для которого открывается вкладка «Графики». Для получения бесплатного разбора и учёта баланса используется вход через Telegram. Оплата производится через платёжный сервис Lava.top; автоматическое продление и повторное списание средств не предусмотрены.",
+  "4. Возврат. Доступ к оплаченному тарифу предоставляется мгновенно после оплаты. Возврат средств возможен в случае технической ошибки, из-за которой доступ не был предоставлен, — по обращению в поддержку (см. «Контакты»).",
+  "5. Персональные данные. Дата рождения и ФИО, введённые в форму, используются только для расчёта и не передаются третьим лицам, за исключением данных, необходимых платёжному сервису для обработки платежа.",
+  "6. Согласие. Начиная использовать Сервис и/или производя оплату, Пользователь подтверждает согласие с условиями настоящей оферты. Действующая редакция всегда доступна на этой странице.",
+  "Контакты: email mvbern8@gmail.com.",
+ ],
+ en:[
+  "This document is a public offer by Marina Bobrenko, a self-employed individual (professional-income taxpayer, Russia) (the “Provider”) to render information services using the “Pythagorean Square” service (the “Service”).",
+  "1. Subject. The Provider gives the User access to an automated calculation of the numerology matrix (Pythagorean square) from a birth date and full name, together with a text interpretation of the resulting numbers.",
+  "2. Nature of the service. The results are for informational and entertainment purposes only; they are not medical, psychological, legal or financial advice and do not replace professional help.",
+  "3. Plans and payment. The “Numbers” and “Interpretation” tabs are free and available without a time limit. The “Charts” tab is unlocked with 1 “reading”: each user's first reading is free; further readings are bought in packs: 399 ₽ (≈$5.99) for 3 readings, 999 ₽ (≈$11.99) for 10 readings, 1399 ₽ (≈$15.99) for 15 readings. Readings do not expire and are spent one at a time, each time the “Charts” tab is unlocked for a new calculation. Logging in with Telegram is used to grant the free reading and keep track of the balance. Payment is processed via the Lava.top payment service; there is no automatic renewal or recurring charge.",
+  "4. Refunds. Access to a paid plan is granted instantly after payment. A refund is possible if a technical error prevented access from being granted — by contacting support (see “Contacts”).",
+  "5. Personal data. The birth date and name entered in the form are used only to perform the calculation and are not shared with third parties, except data required by the payment service to process the payment.",
+  "6. Consent. By using the Service and/or making a payment, the User confirms agreement with the terms of this offer. The current version is always available on this page.",
+  "Contacts: email mvbern8@gmail.com.",
+ ],
+};
+function escapeHtml(t){return t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")}
+function ofertaDocHTML(){
+  const lang=LANG;
+  const title=lang==="ru"?"Публичная оферта — Квадрат Пифагора":"Public Offer — Pythagorean Square";
+  const h1=lang==="ru"?"Публичная оферта":"Public Offer";
+  const sub=lang==="ru"?"Условия использования сервиса «Квадрат Пифагора»":"Terms of use for the “Pythagorean Square” service";
+  const body=OFERTA_PARAS[lang].map(p=>"<p>"+escapeHtml(p)+"</p>").join("");
+  return "<!doctype html><html lang=\""+lang+"\"><head><meta charset=\"utf-8\">"
+   +"<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">"
+   +"<title>"+escapeHtml(title)+"</title><style>"+OFERTA_CSS+"</style></head>"
+   +"<body><main><h1>"+escapeHtml(h1)+"</h1><p class=\"sub\">"+escapeHtml(sub)+"</p>"
+   +"<div class=\"doc\">"+body+"</div></main></body></html>";
+}
+function openOferta(){
+  const blob=new Blob([ofertaDocHTML()],{type:"text/html"});
+  const url=URL.createObjectURL(blob);
+  const win=window.open(url,"_blank");
+  if(!win)location.href=url;
+}
+
+/* ---- вход через Telegram, баланс разборов, оплата пакетов (paywall на вкладке «Графики») ---- */
+let authState={loggedIn:false, telegramId:null, firstName:"", credits:0, freeUsed:false};
+let currentTabGraphsEl=null;
+let graphsUnlockedThisCalc=false;
+let buyerEmail=""; // remembered in memory only for this page load, never persisted
+
+function validEmail(v){return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test((v||"").trim())}
+function buildEmailField(){
+  const s=T();
+  const row=el("div");row.style.cssText="margin:4px 0 12px;display:flex;flex-direction:column;gap:4px;max-width:280px";
+  const label=el("span",null,s.emailLabel);label.style.cssText="font-size:13px;color:var(--muted)";
+  const input=el("input");input.type="email";input.placeholder=s.emailPlaceholder;input.value=buyerEmail;
+  input.addEventListener("input",()=>{buyerEmail=input.value});
+  row.append(label,input);
+  return {row,input};
+}
+
+async function apiGet(path){
+  const res=await fetch(API_BASE+path,{credentials:"include"});
+  return res;
+}
+async function apiPost(path,body){
+  const res=await fetch(API_BASE+path,{
+    method:"POST",credentials:"include",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(body||{}),
+  });
+  return res;
+}
+
+function setAuthFromServer(data){
+  authState={loggedIn:true, telegramId:data.telegram_id, firstName:data.first_name||data.username||"", credits:data.credits, freeUsed:!!data.free_used};
+}
+
+async function loadMe(){
+  try{
+    const res=await apiGet("/me");
+    if(res.ok){ setAuthFromServer(await res.json()) }
+  }catch(e){ /* бэкенд ещё не развёрнут или недоступен — остаёмся неавторизованными, без ошибки в UI */ }
+  refreshAuthBar();
+  renderGraphsTab();
+}
+
+function refreshAuthBar(){
+  const s=T(), bar=$("authbar"); if(!bar)return;
+  bar.replaceChildren();
+  if(authState.loggedIn){
+    bar.append(el("span","who",s.authGreeting(authState.firstName||"Telegram",authState.credits)));
+    const out=el("button",null,s.btnLogout); out.type="button"; out.className="linklike";
+    out.addEventListener("click",doLogout);
+    bar.append(out);
+  } else {
+    mountTelegramWidget(bar);
+  }
+}
+
+let tgWidgetScriptAdded=false;
+function mountTelegramWidget(container){
+  container.replaceChildren();
+  if(!TG_BOT_USERNAME||TG_BOT_USERNAME.indexOf("REPLACE_WITH")===0){
+    return; // бот ещё не настроен — виджет не показываем, чтобы не пугать пустой кнопкой
+  }
+  const holder=el("div"); holder.id="tgLoginHolder_"+Math.random().toString(36).slice(2);
+  container.append(holder);
+  const script=document.createElement("script");
+  script.async=true;
+  script.src="https://telegram.org/js/telegram-widget.js?22";
+  script.setAttribute("data-telegram-login",TG_BOT_USERNAME);
+  script.setAttribute("data-size","medium");
+  script.setAttribute("data-radius","8");
+  script.setAttribute("data-onauth","onTelegramAuth(user)");
+  script.setAttribute("data-request-access","write");
+  holder.append(script);
+}
+
+window.onTelegramAuth=async function(user){
+  try{
+    const res=await apiPost("/auth/telegram",user);
+    if(!res.ok)throw new Error("auth_failed");
+    setAuthFromServer(await res.json());
+    refreshAuthBar();
+    renderGraphsTab();
+  }catch(e){
+    $("err").textContent=T().errGeneric;
+  }
+};
+
+async function doLogout(){
+  try{ await apiPost("/logout") }catch(e){}
+  authState={loggedIn:false, telegramId:null, firstName:"", credits:0, freeUsed:false};
+  graphsUnlockedThisCalc=false;
+  refreshAuthBar();
+  renderGraphsTab();
+}
+
+async function doConsume(){
+  $("err").textContent="";
+  try{
+    const res=await apiPost("/consume");
+    if(res.ok){
+      const data=await res.json();
+      authState.credits=data.credits;
+      authState.freeUsed=true;
+      graphsUnlockedThisCalc=true;
+      refreshAuthBar();
+      renderGraphsTab();
+    } else if(res.status===402){
+      authState.freeUsed=true;
+      refreshAuthBar();
+      renderGraphsTab();
+    } else {
+      throw new Error("consume_failed");
+    }
+  }catch(e){
+    $("err").textContent=T().errGeneric;
+  }
+}
+
+async function doBuy(packKey,email){
+  $("err").textContent="";
+  try{
+    const res=await apiPost("/pay/create",{pack:packKey,lang:LANG,email:email});
+    if(!res.ok)throw new Error("pay_create_failed");
+    const data=await res.json();
+    location.href=data.confirmation_url;
+  }catch(e){
+    $("err").textContent=T().errGeneric;
+  }
+}
+
+function buildPacksUI(){
+  const s=T();
+  const wrap=el("div");
+  const {row,input}=buildEmailField();
+  wrap.append(row);
+  const btnRow=el("div","paywall-packs");
+  PACKS_INFO[LANG].forEach(p=>{
+    const btn=el("button",null,null); btn.type="button"; btn.className="pack-btn";
+    btn.append(el("b",null,s.buyButtonLabel+" · "+p.price));
+    btn.append(el("span",null,readingsLabel(p.credits)));
+    btn.addEventListener("click",()=>{
+      const email=input.value.trim();
+      if(!validEmail(email)){$("err").textContent=s.emailInvalidErr;input.focus();return}
+      buyerEmail=email;
+      doBuy(p.key,email);
+    });
+    btnRow.append(btn);
+  });
+  wrap.append(btnRow);
+  return wrap;
+}
+
+function buildGraphsPaywall(tab){
+  const s=T();
+  const box=el("div","txt");
+  box.append(el("h3",null,s.paywallTitle));
+  box.append(el("p",null,s.paywallDesc));
+  if(!authState.loggedIn){
+    box.append(el("p",null,s.loginPrompt));
+    const slot=el("div");box.append(slot);
+    mountTelegramWidget(slot);
+  } else if(!authState.freeUsed||authState.credits>0){
+    const label=!authState.freeUsed?s.btnUnlockFree:s.btnUnlockCredit(authState.credits);
+    const btn=el("button",null,label);btn.type="button";
+    btn.addEventListener("click",doConsume);
+    box.append(btn);
+  } else {
+    box.append(el("p",null,s.buyMoreLabel));
+    box.append(buildPacksUI());
+  }
+  tab.append(box);
+}
+
+function buildGraphsContent(tab,r){
+  const s=T(), THEME=LIB.theme[LANG];
+  tab.append(el("h2",null,s.hScore));
+  tab.append(el("p","sub",s.subScore1+r.personalCode+s.subScore2));
+  tab.append(buildLifepowerChart(r.personalCode));
+  tab.append(el("h2",null,s.hPeriods));
+  tab.append(el("p","sub",s.subPeriods));
+  const themeOf=v=>{if(v===0)return s.noDiff;const k=v<=9?v:mred(v,[]);return THEME[k]||k};
+  const fmtV=v=>[11,22,33].includes(v)?v+" ("+mred(v,[])+")":String(v);
+  tab.append(buildPinnacleChart(r.pinnacles));
+  const pt=el("table");const ph=el("tr");[s.thAge,s.thTask,s.thProblem].forEach(h=>ph.append(el("th",null,h)));pt.append(ph);
+  r.pinnacles.forEach(([a,b,P,C])=>{const tr=el("tr");
+    tr.append(el("td",null,a+"–"+(b===96?"96+":b)+s.yearsShort));
+    tr.append(el("td",null,fmtV(P)+" — "+themeOf(P)));
+    tr.append(el("td",null,fmtV(C)+" — "+themeOf(C)));
+    pt.append(tr)});
+  tab.append(pt);
+  tab.append(el("p","sub",s.subPeriodTrakt));
+  r.pinnacles.forEach(([a,b,P,C],i)=>{
+    const Pk=P<=9?P:mred(P,[]), Ck=C<=9?C:mred(C,[]);
+    const b1=textBlock(a+"–"+(b===96?"96+":b)+s.yearsShort+s.taskLabel+fmtV(P)+" ("+THEME[Pk]+")", [GEN.pinnacle_task[String(Pk)]||s.noText]);
+    tab.append(b1);
+    if(C>0){const b2=textBlock(s.problemLabel+fmtV(C)+" ("+THEME[Ck]+")", [GEN.pinnacle_challenge[String(Ck)]||s.noText]);tab.append(b2)}
+  });
+}
+
+function renderGraphsTab(){
+  const tab=currentTabGraphsEl;
+  if(!tab||!lastResult)return;
+  tab.replaceChildren();
+  if(graphsUnlockedThisCalc){
+    buildGraphsContent(tab,lastResult);
+  } else {
+    buildGraphsPaywall(tab);
+  }
+}
+function buildInfoTab(){
+  const s=T();
+  const tab=el("div","tabpanel");tab.id="tab-info";
+  tab.append(el("h2",null,s.infoPricingH));
+
+  const {row:emailRow,input:emailInput}=buildEmailField();
+
+  const wrap=el("div","plans");
+  const mkPlan=(hl,name,price,period,desc,buyKey)=>{
+    const p=el("div","plan"+(hl?" hl":""));
+    if(hl)p.append(el("span","badge",s.planBadge));
+    p.append(el("h3",null,name));
+    p.append(el("div","plan-price",price));
+    p.append(el("div","plan-period",period));
+    p.append(el("div","plan-desc",desc));
+    if(buyKey){
+      const btn=el("button",null,s.buyButtonLabel);btn.type="button";
+      const loginSlot=el("div");loginSlot.style.marginTop="8px";
+      btn.addEventListener("click",()=>{
+        if(!authState.loggedIn){mountTelegramWidget(loginSlot);return}
+        const email=emailInput.value.trim();
+        if(!validEmail(email)){$("err").textContent=s.emailInvalidErr;emailInput.focus();return}
+        buyerEmail=email;
+        doBuy(buyKey,email);
+      });
+      p.append(btn);p.append(loginSlot);
+    } else {
+      const ul=el("ul");[s.tabNums,s.tabTrakt].forEach(f=>ul.append(el("li",null,f)));p.append(ul);
+    }
+    return p;
+  };
+  tab.append(emailRow);
+  wrap.append(mkPlan(false,s.planFreeName,s.planFreePrice,s.planFreePeriod,s.planFreeDesc,null));
+  PACKS_INFO[LANG].forEach(pk=>{
+    wrap.append(mkPlan(!!pk.best, readingsLabel(pk.credits), pk.price, s.packPeriod, s.packDesc(pk.credits), pk.key));
+  });
+  tab.append(wrap);
+
+  const termsBox=el("div","txt");
+  termsBox.append(el("p",null,s.infoTermsShort));
+  const tp=el("p","terms-link");
+  const a=el("a",null,s.infoTermsLink);a.href="oferta.html";a.target="_blank";a.rel="noopener";
+  a.addEventListener("click",e=>{e.preventDefault();openOferta()});
+  tp.append(a);termsBox.append(tp);
+  tab.append(termsBox);
+
+  tab.append(el("h2",null,s.infoContactsH));
+  const contacts=el("div","txt");
+  s.infoContacts.forEach(line=>contacts.append(el("p",null,line)));
+  tab.append(contacts);
+  return tab;
+}
+let currentTab="nums";
+let lastResult=null;
+function render(r){
+  lastResult=r;
+  const s=T(), THEME=LIB.theme[LANG];
+  const o=$("out");o.replaceChildren();
+  const tabNums=el("div","tabpanel"),tabGraphs=el("div","tabpanel"),tabTrakt=el("div","tabpanel"),tabInfo=buildInfoTab();
+  tabNums.id="tab-nums";tabGraphs.id="tab-graphs";tabTrakt.id="tab-trakt";
+
+  // === вкладка «Числа»: основная цифра, доп. цифры, квадрат ===
+  const hero=el("div","txt");hero.append(el("h3",null,s.heroPrefix+r.main));
+  tabNums.append(hero);
+  tabNums.append(el("h2",null,s.hAddNums));
+  const kv=el("div","kv");
+  [[s.kvDay,r.D],[s.kvMonth,r.M],[s.kvYear,r.Y],[s.kvLesson,r.d4],[s.kvCode,r.personalCode]].forEach(([k,v])=>{kv.append(el("span",null,k),el("b",null,v))});
+  tabNums.append(kv);
+  tabNums.append(el("h2",null,s.hSquare));
+  const g=el("div","grid3");
+  [[1,4,7],[2,5,8],[3,6,9]].flatMap(x=>x).forEach(n=>{ // строка = 1,4,7 / 2,5,8 / 3,6,9
+    const c=r.cnt[n]||0;const cell=el("div",c?"has":null,c?String(n).repeat(c):"–");cell.append(el("small",null,n+" · "+THEME[n]));g.append(cell)});
+  tabNums.append(g);
+
+  // === вкладка «Графики»: платная, доступ через renderGraphsTab()/buildGraphsContent() ===
+  currentTabGraphsEl=tabGraphs;
+  graphsUnlockedThisCalc=false;
+  renderGraphsTab();
+
+  // === вкладка «Трактовка»: именные числа, ячейки квадрата ===
+  tabTrakt.append(el("h2",null,s.hInterpNums));
+  const roleRow=(roleKey,label,value)=>{
+    const b=el("div","txt");b.append(el("h3",null,label+" — "+value));
+    const gg=GEN.role[roleKey]&&GEN.role[roleKey][String(value)];
+    b.append(el("p",null,gg||s.noRoleText(value)));
+    tabTrakt.append(b)};
+  roleRow("day",s.roleDay,r.D);
+  roleRow("lesson",s.roleLesson,r.d4);
+  roleRow("soul",s.roleSoul,r.soul);
+  roleRow("personality",s.rolePersonality,r.personality);
+  roleRow("destiny",s.roleDestiny,r.d5!==r.destiny?r.d5:r.destiny);
+  tabTrakt.append(el("h2",null,s.hInterpCells));
+  tabTrakt.append(el("p","sub",s.subCells));
+  for(let n=1;n<=9;n++){const c=r.cnt[n]||0,tier=String(Math.min(c,4)),head=n+" — "+THEME[n]+" ("+(c?String(n).repeat(c):s.none)+")";
+    const b=el("div","txt");b.append(el("h3",null,head));
+    const gg=GEN.square_tier[n]&&GEN.square_tier[n][tier];
+    b.append(el("p",null,gg||s.noCellText));
+    tabTrakt.append(b)}
+
+  // === панель вкладок ===
+  const bar=el("div","tabbar");
+  const tabs=[["nums",s.tabNums,tabNums],["trakt",s.tabTrakt,tabTrakt],["graphs",s.tabGraphs,tabGraphs],["info",s.tabInfo,tabInfo]];
+  const panels={};
+  tabs.forEach(([key,label,panel])=>{
+    panels[key]=panel;
+    const btn=el("button",null,label);btn.type="button";btn.dataset.tab=key;
+    btn.addEventListener("click",()=>switchTab(key));
+    bar.append(btn);
+  });
+  o.append(bar);
+  tabs.forEach(([key,,panel])=>o.append(panel));
+  function switchTab(key){
+    currentTab=key;
+    bar.querySelectorAll(".tabbtn,button").forEach(b=>b.classList.toggle("active",b.dataset.tab===key));
+    tabs.forEach(([k,,panel])=>panel.classList.toggle("active",k===key));
+  }
+  bar.querySelectorAll("button").forEach(b=>b.className="tabbtn");
+  switchTab(tabs.some(([k])=>k===currentTab)?currentTab:"nums");
+}
+function applyStaticLang(){
+  const s=T();
+  $("pageTitle").textContent=s.pageTitle; document.title=s.pageTitle;
+  $("h1Title").textContent=s.h1;
+  $("subText").textContent=s.sub;
+  $("lblSurname").textContent=s.lblSurname;
+  $("lblName").textContent=s.lblName;
+  $("lblPatr").textContent=s.lblPatr;
+  $("p").required=(LANG!=="en");
+  $("lblDate").textContent=s.lblDate;
+  $("d").placeholder=s.datePlaceholder;
+  $("btnCalc").textContent=s.btnCalc;
+  $("nameHint").textContent=s.nameHint;
+  document.documentElement.lang=LANG;
+  $("langbar").querySelectorAll(".langbtn").forEach(b=>b.classList.toggle("active",b.dataset.lang===LANG));
+  refreshAuthBar();
+}
+let fieldsByLang={};
+$("langbar").addEventListener("click",e=>{
+  const b=e.target.closest(".langbtn");if(!b)return;
+  const lang=b.dataset.lang; if(lang===LANG)return;
+  fieldsByLang[LANG]={s:$("s").value,n:$("n").value,p:$("p").value,d:$("d").value};
+  LANG=lang; GEN=GEN_ALL[LANG];
+  if(!fieldsByLang[LANG]){
+    const src=fieldsByLang.ru||{s:$("s").value,n:$("n").value,p:$("p").value,d:$("d").value};
+    fieldsByLang[LANG]=lang==="en"
+      ? {s:translit(src.s),n:translit(src.n),p:translit(src.p),d:src.d}
+      : {...src};
+  }
+  const f=fieldsByLang[LANG];
+  $("s").value=f.s; $("n").value=f.n; $("p").value=f.p; $("d").value=f.d;
+  applyStaticLang();
+  $("f").requestSubmit();
+});
+$("f").addEventListener("submit",e=>{e.preventDefault();$("err").textContent="";
+  const s=T();
+  const ds=$("d").value.trim(),m=ds.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+  if(!m||+m[1]<1||+m[1]>31||+m[2]<1||+m[2]>12){$("err").textContent=s.errDate;return}
+  const alpha=ALPHA[LANG];
+  const hasLetters=w=>[...w.toUpperCase()].some(c=>alpha.LETTER[c]);
+  const pVal=$("p").value.trim();
+  const pOk=!$("p").required&&pVal===""?true:hasLetters(pVal);
+  const bad=!hasLetters($("s").value)||!hasLetters($("n").value)||!pOk;
+  if(bad){$("err").textContent=s.errLetters;return}
+  $("err").textContent="";
+  render(calc(ds,$("s").value,$("n").value,$("p").value,"all17",LANG));
+});
+applyStaticLang();
+$("f").requestSubmit();
+loadMe();
+</script>
+</body></html>

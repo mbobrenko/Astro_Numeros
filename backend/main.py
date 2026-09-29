@@ -83,7 +83,7 @@ EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 # foreign-currency payment channel exists (see conversation notes) — YooKassa will
 # still charge the RUB amount even when the UI shows the EN/$ price.
 PACKS = {
-    "pack3":  {"credits": 3,  "amount_rub": 399,  "amount_usd": 4.99,  "label_ru": "3 разбора",  "label_en": "3 readings"},
+    "pack3":  {"credits": 3,  "amount_rub": 399,  "amount_usd": 5.99,  "label_ru": "3 разбора",  "label_en": "3 readings"},
     "pack10": {"credits": 10, "amount_rub": 999,  "amount_usd": 11.99, "label_ru": "10 разборов", "label_en": "10 readings"},
     "pack15": {"credits": 15, "amount_rub": 1399, "amount_usd": 15.99, "label_ru": "15 разборов", "label_en": "15 readings"},
 }

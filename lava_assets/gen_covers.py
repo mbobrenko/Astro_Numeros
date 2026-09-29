@@ -1,14 +1,14 @@
 """Generates the 6 Lava.top product-card cover images (pack3/10/15 x ru/en)
 by rendering a small HTML/CSS template and screenshotting it with Playwright
-(no image-generation tool is available in this environment, and Lava.top's
-own cover-size guide page returned HTTP 403 on every fetch attempt while
-building this, so 1200x630 was chosen as a safe default: it's the standard
-"link preview / cover" size used across most platforms, and Lava.top's own
-product editor lets you re-crop an uploaded image on their side anyway).
+(no image-generation tool is available in this environment).
+
+Size confirmed from Lava.top's own "Как создать цифровой продукт?" FAQ
+article (faq.lava.top/article/53726): cover must be 1160x464px, JPG/JPEG/
+PNG/WebP.
 
 Run with: python3 gen_covers.py
-Output: covers/pack{3,10,15}_{ru,en}.png (1200x630, @2x pixel density baked
-in for crispness -> actual PNG pixel size 2400x1260).
+Output: covers/pack{3,10,15}_{ru,en}.png (1160x464, @2x pixel density baked
+in for crispness -> actual PNG pixel size 2320x928).
 """
 import os
 from playwright.sync_api import sync_playwright
@@ -17,9 +17,16 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(HERE, "covers")
 os.makedirs(OUT_DIR, exist_ok=True)
 
+COVER_W = 1160
+COVER_H = 464
+
+# NOTE on EN pack3 price: Lava.top requires a minimum product price of $5
+# (per faq.lava.top/article/53726), so the originally-suggested $4.99 is
+# bumped to $5.99 here — everywhere else (product titles/descriptions/
+# content.md) should use this same figure.
 PACKS = {
     "pack3": {"ru": {"count": "3", "label": "разбора", "price": "399 ₽"},
-              "en": {"count": "3", "label": "readings", "price": "$4.99"}},
+              "en": {"count": "3", "label": "readings", "price": "$5.99"}},
     "pack10": {"ru": {"count": "10", "label": "разборов", "price": "999 ₽"},
                "en": {"count": "10", "label": "readings", "price": "$11.99"}},
     "pack15": {"ru": {"count": "15", "label": "разборов", "price": "1399 ₽"},
@@ -28,11 +35,9 @@ PACKS = {
 
 TITLE = {"ru": "Квадрат Пифагора", "en": "Pythagorean Square"}
 SUBTITLE = {
-    "ru": "Открывает вкладку «Графики»: периоды жизни и график жизненных сил",
-    "en": "Unlocks the “Charts” tab: life periods and the life-force chart",
+    "ru": "Вкладка «Графики»: периоды жизни и график жизненных сил",
+    "en": "Unlocks “Charts”: life periods & life-force chart",
 }
-FOOTER = {"ru": "по дате рождения и ФИО · @AstroNumeros_bot",
-          "en": "from birth date and full name · @AstroNumeros_bot"}
 BEST_BADGE = {"ru": "Выгоднее", "en": "Best value"}
 
 # Decorative sample grid — not a real calculation, just echoes the site's
@@ -48,42 +53,38 @@ HTML_TEMPLATE = """<!doctype html>
   * {{ box-sizing:border-box; }}
   html,body {{ margin:0; padding:0; }}
   body {{
-    width:1200px; height:630px; overflow:hidden;
+    width:{w}px; height:{h}px; overflow:hidden;
     background:linear-gradient(135deg,var(--bg) 0%,var(--hi) 100%);
     font-family:'Helvetica Neue',Arial,sans-serif; color:var(--fg);
     display:flex; align-items:center; justify-content:space-between;
-    padding:0 70px; position:relative;
+    padding:0 46px; position:relative;
   }}
   .grid {{
-    display:grid; grid-template-columns:repeat(3,84px); grid-template-rows:repeat(3,84px);
-    gap:6px; background:var(--line); border:2px solid var(--accent); border-radius:14px;
-    padding:6px; box-shadow:0 18px 40px -12px rgba(138,75,45,0.35);
+    display:grid; grid-template-columns:repeat(3,58px); grid-template-rows:repeat(3,58px);
+    gap:5px; background:var(--line); border:2px solid var(--accent); border-radius:12px;
+    padding:5px; box-shadow:0 14px 30px -10px rgba(138,75,45,0.35); flex:none;
   }}
   .cell {{
-    background:var(--card); border-radius:8px; display:flex; align-items:center;
-    justify-content:center; font-size:15px; letter-spacing:2px; color:var(--accent);
+    background:var(--card); border-radius:7px; display:flex; align-items:center;
+    justify-content:center; font-size:11px; letter-spacing:1.5px; color:var(--accent);
     font-weight:600;
   }}
-  .right {{ max-width:640px; }}
+  .right {{ max-width:660px; margin-left:36px; }}
   .eyebrow {{
-    font-size:20px; color:var(--accent); font-weight:600; letter-spacing:0.5px;
-    margin-bottom:10px;
+    font-size:15px; color:var(--accent); font-weight:600; letter-spacing:0.4px;
+    margin-bottom:6px;
   }}
-  h1 {{ font-size:46px; margin:0 0 14px 0; font-weight:700; line-height:1.1; }}
-  .subtitle {{ font-size:21px; color:var(--muted); line-height:1.4; margin-bottom:30px; }}
-  .badge-row {{ display:flex; align-items:center; gap:18px; }}
+  h1 {{ font-size:32px; margin:0 0 8px 0; font-weight:700; line-height:1.1; }}
+  .subtitle {{ font-size:14px; color:var(--muted); line-height:1.35; margin-bottom:16px; }}
+  .badge-row {{ display:flex; align-items:center; gap:14px; }}
   .pack-badge {{
-    background:var(--accent); color:#fff; border-radius:16px; padding:16px 30px;
-    font-size:30px; font-weight:700; box-shadow:0 10px 24px -8px rgba(138,75,45,0.5);
+    background:var(--accent); color:#fff; border-radius:12px; padding:10px 20px;
+    font-size:19px; font-weight:700; box-shadow:0 8px 18px -6px rgba(138,75,45,0.5);
   }}
-  .price {{ font-size:34px; font-weight:700; color:var(--fg); }}
+  .price {{ font-size:21px; font-weight:700; color:var(--fg); }}
   .best {{
-    position:absolute; top:36px; right:70px; background:#2f6e4c; color:#fff;
-    font-size:16px; font-weight:700; padding:8px 16px; border-radius:999px;
-  }}
-  .footer {{
-    position:absolute; bottom:30px; left:70px; right:70px; font-size:16px;
-    color:var(--muted); display:flex; justify-content:space-between;
+    position:absolute; top:18px; right:46px; background:#2f6e4c; color:#fff;
+    font-size:12px; font-weight:700; padding:5px 12px; border-radius:999px;
   }}
 </style></head>
 <body>
@@ -100,7 +101,6 @@ HTML_TEMPLATE = """<!doctype html>
       <div class="price">{price}</div>
     </div>
   </div>
-  <div class="footer"><span>{footer}</span><span>Квадрат Пифагора</span></div>
 </body></html>
 """
 
@@ -110,7 +110,8 @@ def render(pack_key, lang):
     cells_html = "".join(f'<div class="cell">{c}</div>' for c in GRID_CELLS)
     best_badge = f'<div class="best">{BEST_BADGE[lang]}</div>' if pack_key == "pack15" else ""
     html = HTML_TEMPLATE.format(
-        title=TITLE[lang], subtitle=SUBTITLE[lang], footer=FOOTER[lang],
+        w=COVER_W, h=COVER_H,
+        title=TITLE[lang], subtitle=SUBTITLE[lang],
         count=p["count"], label=p["label"], price=p["price"],
         cells=cells_html, best_badge=best_badge,
     )
@@ -120,7 +121,7 @@ def render(pack_key, lang):
 def main():
     with sync_playwright() as pw:
         browser = pw.chromium.launch(executable_path="/opt/pw-browsers/chromium")
-        page = browser.new_page(viewport={"width": 1200, "height": 630}, device_scale_factor=2)
+        page = browser.new_page(viewport={"width": COVER_W, "height": COVER_H}, device_scale_factor=2)
         for pack_key in PACKS:
             for lang in ("ru", "en"):
                 html = render(pack_key, lang)

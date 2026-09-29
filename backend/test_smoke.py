@@ -100,7 +100,7 @@ print("OK: RU packs ->", packs_ru)
 
 r = client.get("/api/packs?lang=en")
 packs_en = r.json()
-assert packs_en["pack3"]["amount"] == 4.99 and packs_en["pack3"]["currency"] == "USD"
+assert packs_en["pack3"]["amount"] == 5.99 and packs_en["pack3"]["currency"] == "USD"
 print("OK: EN packs ->", packs_en)
 
 print("\nALL SMOKE TESTS PASSED")
