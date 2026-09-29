@@ -15,9 +15,12 @@ os.environ["TELEGRAM_BOT_TOKEN"] = "123456:testtoken"
 os.environ["SESSION_SECRET"] = "testsecret"
 os.environ["LAVA_API_KEY"] = "test-lava-key"
 os.environ["LAVA_WEBHOOK_SECRET"] = "test-webhook-secret"
-os.environ["LAVA_OFFER_PACK3"] = "offer-pack3-uuid"
-os.environ["LAVA_OFFER_PACK10"] = "offer-pack10-uuid"
-os.environ["LAVA_OFFER_PACK15"] = "offer-pack15-uuid"
+os.environ["LAVA_OFFER_PACK3_RU"] = "offer-pack3-ru-uuid"
+os.environ["LAVA_OFFER_PACK3_EN"] = "offer-pack3-en-uuid"
+os.environ["LAVA_OFFER_PACK10_RU"] = "offer-pack10-ru-uuid"
+os.environ["LAVA_OFFER_PACK10_EN"] = "offer-pack10-en-uuid"
+os.environ["LAVA_OFFER_PACK15_RU"] = "offer-pack15-ru-uuid"
+os.environ["LAVA_OFFER_PACK15_EN"] = "offer-pack15-en-uuid"
 os.environ["DB_PATH"] = "/tmp/test_pifagor_lava.db"
 
 if os.path.exists("/tmp/test_pifagor_lava.db"):
@@ -43,10 +46,14 @@ class FakeResp:
         return self._json
 
 
+invoice_requests = []  # records each request body for offerId assertions
+
+
 def fake_post(url, json=None, headers=None, timeout=None):
     assert url == "https://gate.lava.top/api/v3/invoice"
     assert headers["X-Api-Key"] == "test-lava-key"
     assert json["email"], "email must be present"
+    invoice_requests.append(json)
     inv_id = f"inv-{next_invoice_id[0]}"
     next_invoice_id[0] += 1
     fake_invoices[inv_id] = "PENDING"
@@ -93,18 +100,24 @@ with client as c:
     assert r.status_code == 400, r.text
     print("OK: unknown pack rejected")
 
-    # RU purchase -> RUB currency, no paymentProvider override
+    # RU purchase -> RUB currency, RU offerId, no paymentProvider override
     r = c.post("/api/pay/create", json={"pack": "pack10", "lang": "ru", "email": "marina@example.com"})
     assert r.status_code == 200, r.text
     ru_url = r.json()["confirmation_url"]
     assert ru_url.startswith("https://lava.top/pay/")
-    print("OK: RU pack10 purchase created ->", r.json())
+    ru_req = invoice_requests[-1]
+    assert ru_req["offerId"] == "offer-pack10-ru-uuid", ru_req
+    assert ru_req["currency"] == "RUB" and "paymentProvider" not in ru_req
+    print("OK: RU pack10 purchase created with the RU offerId ->", r.json())
 
-    # EN purchase -> USD currency + PayPal rail
+    # EN purchase -> USD currency + PayPal rail + the separate EN offerId
     r = c.post("/api/pay/create", json={"pack": "pack3", "lang": "en", "email": "marina@example.com"})
     assert r.status_code == 200, r.text
     en_url = r.json()["confirmation_url"]
-    print("OK: EN pack3 purchase created ->", r.json())
+    en_req = invoice_requests[-1]
+    assert en_req["offerId"] == "offer-pack3-en-uuid", en_req
+    assert en_req["currency"] == "USD" and en_req["paymentProvider"] == "PAYPAL"
+    print("OK: EN pack3 purchase created with the separate EN offerId ->", r.json())
 
     # balance still 0 (nothing paid yet)
     r = c.get("/api/me")
