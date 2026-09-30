@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://cute-unicorn-943134.netlify.app/sitemap.xml

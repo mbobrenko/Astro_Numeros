@@ -3,7 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title id="pageTitle">Квадрат Пифагора — тест</title>
+<title id="pageTitle">Квадрат Пифагора онлайн — расчёт по дате рождения и ФИО</title>
+<meta name="description" id="pageDesc" content="Бесплатный расчёт квадрата Пифагора по дате рождения и ФИО: основные и дополнительные числа, трактовка личного кода, график жизненных сил и периоды жизни.">
+<link rel="canonical" id="pageCanonical" href="">
 <style>
   :root{--bg:#faf9f7;--fg:#1f1d1a;--muted:#6b665f;--card:#fff;--line:#e2ded7;--accent:#8a4b2d;--hi:#f3e6dc}
   @media (prefers-color-scheme:dark){:root{--bg:#191816;--fg:#ece8e1;--muted:#a49e94;--card:#232220;--line:#3a3733;--accent:#e0a17c;--hi:#33271f}}
@@ -71,6 +73,7 @@
   <div>
     <h1 id="h1Title">Квадрат Пифагора по дате и ФИО</h1>
     <p class="sub" id="subText">Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.</p>
+    <p class="sub" id="introText">Онлайн-калькулятор нумерологии рассчитывает квадрат Пифагора: основные и дополнительные числа, личный код и его трактовку, а также график жизненных сил и периоды жизни с их задачами и трудностями.</p>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
     <div class="langbar" id="langbar">
@@ -82,10 +85,10 @@
 </div>
 
 <form id="f">
-  <label><span id="lblSurname">Фамилия</span><input id="s" value="Бобренко" required></label>
-  <label><span id="lblName">Имя</span><input id="n" value="Марина" required></label>
-  <label><span id="lblPatr">Отчество</span><input id="p" value="Николаевна" required></label>
-  <label><span id="lblDate">Дата рождения</span><input id="d" value="22.02.1984" placeholder="ДД.ММ.ГГГГ" required pattern="\d{1,2}\.\d{1,2}\.\d{4}"></label>
+  <label><span id="lblSurname">Фамилия</span><input id="s" value="Иванов" required></label>
+  <label><span id="lblName">Имя</span><input id="n" value="Иван" required></label>
+  <label><span id="lblPatr">Отчество</span><input id="p" value="Иванович" required></label>
+  <label><span id="lblDate">Дата рождения</span><input id="d" value="01.01.1990" placeholder="ДД.ММ.ГГГГ" required pattern="\d{1,2}\.\d{1,2}\.\d{4}"></label>
   <button id="btnCalc">Рассчитать</button>
 </form>
 <p class="hint" id="nameHint"></p>
@@ -425,9 +428,11 @@ const PACKS_INFO = {
 /* ---- строковые ресурсы интерфейса (RU/EN) ---- */
 const STR = {
  ru:{
-  pageTitle:"Квадрат Пифагора — тест",
+  pageTitle:"Квадрат Пифагора онлайн — расчёт по дате рождения и ФИО",
+  pageDesc:"Бесплатный расчёт квадрата Пифагора по дате рождения и ФИО: основные и дополнительные числа, трактовка личного кода, график жизненных сил и периоды жизни.",
   h1:"Квадрат Пифагора по дате и ФИО",
   sub:"Дата рождения и ФИО — квадрат Пифагора, периоды жизни и трактовка чисел.",
+  introText:"Онлайн-калькулятор нумерологии рассчитывает квадрат Пифагора: основные и дополнительные числа, личный код и его трактовку, а также график жизненных сил и периоды жизни с их задачами и трудностями.",
   lblSurname:"Фамилия", lblName:"Имя", lblPatr:"Отчество", lblDate:"Дата рождения",
   datePlaceholder:"ДД.ММ.ГГГГ", btnCalc:"Рассчитать",
   nameHint:"",
@@ -483,9 +488,11 @@ const STR = {
   emailInvalidErr:"Укажите корректный email — на него придёт чек об оплате",
  },
  en:{
-  pageTitle:"Pythagorean Square — test",
+  pageTitle:"Pythagorean Square Calculator — Birth Date & Name Reading",
+  pageDesc:"Free Pythagorean Square calculator from your birth date and name: core and additional numbers, personal code interpretation, life-force chart, and life periods.",
   h1:"Pythagorean Square by birth date and name",
   sub:"Birth date and full name — Pythagorean square, life periods, and number interpretations.",
+  introText:"This free numerology calculator works out your Pythagorean Square: core and additional numbers, your personal code and its meaning, plus a life-force chart and life periods with their tasks and challenges.",
   lblSurname:"Last name", lblName:"First name", lblPatr:"Patronymic (optional)", lblDate:"Date of birth",
   datePlaceholder:"DD.MM.YYYY", btnCalc:"Calculate",
   nameHint:"",
@@ -1041,8 +1048,11 @@ function render(r){
 function applyStaticLang(){
   const s=T();
   $("pageTitle").textContent=s.pageTitle; document.title=s.pageTitle;
+  $("pageDesc").setAttribute("content",s.pageDesc);
+  $("pageCanonical").setAttribute("href",location.origin+location.pathname);
   $("h1Title").textContent=s.h1;
   $("subText").textContent=s.sub;
+  $("introText").textContent=s.introText;
   $("lblSurname").textContent=s.lblSurname;
   $("lblName").textContent=s.lblName;
   $("lblPatr").textContent=s.lblPatr;
