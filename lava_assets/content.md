@@ -53,15 +53,13 @@ Lava.top товар называется и описывается как «Ну
 
 > Здравствуйте!
 >
-> Спасибо за покупку — разборы уже добавляются на баланс автоматически, обычно в течение нескольких минут.
+> Разборы добавляются на баланс автоматически, обычно за несколько минут.
 >
-> Как получить доступ:
-> 1. Откройте бот @AstroNumeros_bot в Telegram (или сайт, когда заработает постоянный адрес) и войдите тем же аккаунтом Telegram, что и при оплате.
-> 2. Введите дату рождения и ФИО и откройте вкладку «Графики» — теперь она доступна.
+> Как получить доступ: откройте бот @AstroNumeros_bot в Telegram (или сайт, когда заработает), войдите тем же аккаунтом Telegram, что и при оплате, и откройте вкладку «Графики».
 >
 > Разборы не сгорают.
 >
-> Если баланс не обновился за 15–20 минут после оплаты, или есть вопросы — ответьте на это письмо или напишите на mvbern8@gmail.com.
+> Баланс не обновился за 20 минут, или есть вопросы — напишите на mvbern8@gmail.com.
 
 ---
 
@@ -82,16 +80,14 @@ Lava.top товар называется и описывается как «Ну
 
 > Your purchase — numerology destiny reading
 
-## EN — Buyer email — body (same for both, shortened)
+## EN — Buyer email — body (same for both, shortened further)
 
-> Hello!
+> Hi!
 >
-> Thanks for your purchase — your readings are added to your balance automatically, usually within a few minutes.
+> Your readings are added automatically within a few minutes.
 >
-> How to access:
-> 1. Open @AstroNumeros_bot in Telegram (or the website once it's live) and sign in with the same Telegram account you paid with.
-> 2. Enter your birth date and full name, then open the "Charts" tab — it's unlocked.
+> How to access: open @AstroNumeros_bot in Telegram (or the site once live), log in with the same Telegram account you paid with, then open the "Charts" tab.
 >
 > Credits never expire.
 >
-> Balance not updated within 15–20 minutes, or questions? Reply here or write to mvbern8@gmail.com.
+> No balance after 20 minutes, or questions — write to mvbern8@gmail.com.
