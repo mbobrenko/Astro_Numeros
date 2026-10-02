@@ -414,14 +414,12 @@ const API_BASE = "/api"; // бэкенд должен быть на том же 
 const TG_BOT_USERNAME = "AstroNumeros_bot"; // username бота из @BotFather, без @
 const PACKS_INFO = {
   ru:[
-    {key:"pack3", credits:3, price:"399 ₽"},
-    {key:"pack10", credits:10, price:"999 ₽", best:true},
-    {key:"pack15", credits:15, price:"1399 ₽"},
+    {key:"pack3", credits:3, price:"999 ₽"},
+    {key:"pack10", credits:10, price:"2499 ₽", best:true},
   ],
   en:[
-    {key:"pack3", credits:3, price:"$5.99"},
-    {key:"pack10", credits:10, price:"$11.99", best:true},
-    {key:"pack15", credits:15, price:"$15.99"},
+    {key:"pack3", credits:3, price:"$14.99"},
+    {key:"pack10", credits:10, price:"$34.99", best:true},
   ],
 };
 
@@ -466,7 +464,7 @@ const STR = {
   planFreeName:"Free", planFreePrice:"0 ₽", planFreePeriod:"навсегда",
   planFreeDesc:"Вкладки «Числа» и «Трактовка» — без ограничений. Плюс один бесплатный разбор с открытием вкладки «Графики».",
   packPeriod:"разово, без срока действия",
-  packDesc:n=>"Открывает вкладку «Графики» для "+n+" расчётов.", // после «для» число всегда в род. падеже мн. числа — пакеты 3/10/15, «1» здесь не бывает
+  packDesc:n=>"Открывает вкладку «Графики» для "+n+" расчётов.", // после «для» число всегда в род. падеже мн. числа — пакеты 3/10, «1» здесь не бывает
   planFeaturesLabel:"Доступные вкладки:",
   planBadge:"выгоднее",
   infoTermsShort:"Полный текст условий оказания услуг и оплаты — в отдельном документе.",
@@ -680,7 +678,7 @@ const OFERTA_PARAS = {
   "Настоящий документ является публичной офертой Марины Бобренко, самозанятой (плательщик налога на профессиональный доход) (далее — «Исполнитель») на оказание информационных услуг с использованием сервиса «Квадрат Пифагора» (далее — «Сервис»).",
   "1. Предмет. Исполнитель предоставляет Пользователю доступ к автоматическому расчёту нумерологической матрицы (квадрата Пифагора) по дате рождения и ФИО, а также текстовую трактовку полученных чисел.",
   "2. Характер услуг. Результаты расчёта носят информационно-развлекательный характер, не являются медицинской, психологической, юридической или финансовой консультацией и не заменяют профессиональную помощь.",
-  "3. Тарифы и оплата. Вкладки «Числа» и «Трактовка» доступны бесплатно и без ограничения по времени. Вкладка «Графики» открывается за 1 «разбор»: первый разбор для каждого пользователя — бесплатно, далее разборы приобретаются пакетами: 399 ₽ — 3 разбора, 999 ₽ — 10 разборов, 1399 ₽ — 15 разборов. Разборы не имеют срока действия и списываются по одному за каждый новый расчёт, для которого открывается вкладка «Графики». Для получения бесплатного разбора и учёта баланса используется вход через Telegram. Оплата производится через платёжный сервис Lava.top; автоматическое продление и повторное списание средств не предусмотрены.",
+  "3. Тарифы и оплата. Вкладки «Числа» и «Трактовка» доступны бесплатно и без ограничения по времени. Вкладка «Графики» открывается за 1 «разбор»: первый разбор для каждого пользователя — бесплатно, далее разборы приобретаются пакетами: 999 ₽ — 3 разбора, 2499 ₽ — 10 разборов. Пакеты можно докупать повторно в любой момент, когда разборы заканчиваются. Разборы не имеют срока действия и списываются по одному за каждый новый расчёт, для которого открывается вкладка «Графики». Для получения бесплатного разбора и учёта баланса используется вход через Telegram. Оплата производится через платёжный сервис Lava.top; автоматическое продление и повторное списание средств не предусмотрены.",
   "4. Возврат. Доступ к оплаченному тарифу предоставляется мгновенно после оплаты. Возврат средств возможен в случае технической ошибки, из-за которой доступ не был предоставлен, — по обращению в поддержку (см. «Контакты»).",
   "5. Персональные данные. Дата рождения и ФИО, введённые в форму, используются только для расчёта и не передаются третьим лицам, за исключением данных, необходимых платёжному сервису для обработки платежа.",
   "6. Согласие. Начиная использовать Сервис и/или производя оплату, Пользователь подтверждает согласие с условиями настоящей оферты. Действующая редакция всегда доступна на этой странице.",
@@ -690,7 +688,7 @@ const OFERTA_PARAS = {
   "This document is a public offer by Marina Bobrenko, a self-employed individual (professional-income taxpayer, Russia) (the “Provider”) to render information services using the “Pythagorean Square” service (the “Service”).",
   "1. Subject. The Provider gives the User access to an automated calculation of the numerology matrix (Pythagorean square) from a birth date and full name, together with a text interpretation of the resulting numbers.",
   "2. Nature of the service. The results are for informational and entertainment purposes only; they are not medical, psychological, legal or financial advice and do not replace professional help.",
-  "3. Plans and payment. The “Numbers” and “Interpretation” tabs are free and available without a time limit. The “Charts” tab is unlocked with 1 “reading”: each user's first reading is free; further readings are bought in packs: 399 ₽ (≈$5.99) for 3 readings, 999 ₽ (≈$11.99) for 10 readings, 1399 ₽ (≈$15.99) for 15 readings. Readings do not expire and are spent one at a time, each time the “Charts” tab is unlocked for a new calculation. Logging in with Telegram is used to grant the free reading and keep track of the balance. Payment is processed via the Lava.top payment service; there is no automatic renewal or recurring charge.",
+  "3. Plans and payment. The “Numbers” and “Interpretation” tabs are free and available without a time limit. The “Charts” tab is unlocked with 1 “reading”: each user's first reading is free; further readings are bought in packs: 999 ₽ (≈$14.99) for 3 readings, 2499 ₽ (≈$34.99) for 10 readings. Packs can be bought again at any time once your readings run out. Readings do not expire and are spent one at a time, each time the “Charts” tab is unlocked for a new calculation. Logging in with Telegram is used to grant the free reading and keep track of the balance. Payment is processed via the Lava.top payment service; there is no automatic renewal or recurring charge.",
   "4. Refunds. Access to a paid plan is granted instantly after payment. A refund is possible if a technical error prevented access from being granted — by contacting support (see “Contacts”).",
   "5. Personal data. The birth date and name entered in the form are used only to perform the calculation and are not shared with third parties, except data required by the payment service to process the payment.",
   "6. Consent. By using the Service and/or making a payment, the User confirms agreement with the terms of this offer. The current version is always available on this page.",

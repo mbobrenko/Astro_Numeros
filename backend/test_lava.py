@@ -19,8 +19,6 @@ os.environ["LAVA_OFFER_PACK3_RU"] = "offer-pack3-ru-uuid"
 os.environ["LAVA_OFFER_PACK3_EN"] = "offer-pack3-en-uuid"
 os.environ["LAVA_OFFER_PACK10_RU"] = "offer-pack10-ru-uuid"
 os.environ["LAVA_OFFER_PACK10_EN"] = "offer-pack10-en-uuid"
-os.environ["LAVA_OFFER_PACK15_RU"] = "offer-pack15-ru-uuid"
-os.environ["LAVA_OFFER_PACK15_EN"] = "offer-pack15-en-uuid"
 os.environ["DB_PATH"] = "/tmp/test_pifagor_lava.db"
 
 if os.path.exists("/tmp/test_pifagor_lava.db"):

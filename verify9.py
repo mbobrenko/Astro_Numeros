@@ -33,9 +33,9 @@ async def main():
         info_text = await page.locator("#tab-info").inner_text()
         print("\n--- Тарифы tab snippet ---")
         print(info_text[:600])
-        for expect in ["399", "999", "1399", "Free"]:
+        for expect in ["999", "2499", "Free"]:
             assert expect in info_text, f"missing {expect} in pricing tab"
-        print("OK: pricing tab shows Free + 3 packs with correct prices")
+        print("OK: pricing tab shows Free + 2 packs with correct prices")
 
         # switch to EN, re-check graphs paywall + pricing in USD
         await page.get_by_role("button", name="EN", exact=True).click()
@@ -53,7 +53,7 @@ async def main():
         info_text_en = await page.locator("#tab-info").inner_text()
         print("\n--- Pricing tab (EN) snippet ---")
         print(info_text_en[:600])
-        for expect in ["5.99", "11.99", "15.99"]:
+        for expect in ["14.99", "34.99"]:
             assert expect in info_text_en, f"missing {expect} in EN pricing tab"
         print("OK: EN pricing tab shows USD prices")
 

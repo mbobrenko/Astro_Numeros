@@ -27,8 +27,6 @@ Run locally for testing:
     export LAVA_OFFER_PACK3_EN=...      # offerId (UUID) of the EN "3 readings" product in Lava.top
     export LAVA_OFFER_PACK10_RU=...
     export LAVA_OFFER_PACK10_EN=...
-    export LAVA_OFFER_PACK15_RU=...
-    export LAVA_OFFER_PACK15_EN=...
     export FRONTEND_URL=https://your-domain.example
     uvicorn main:app --host 0.0.0.0 --port 8000
 
@@ -71,7 +69,6 @@ LAVA_WEBHOOK_SECRET = os.environ.get("LAVA_WEBHOOK_SECRET", "")
 LAVA_OFFERS = {
     "pack3":  {"ru": os.environ.get("LAVA_OFFER_PACK3_RU", ""),  "en": os.environ.get("LAVA_OFFER_PACK3_EN", "")},
     "pack10": {"ru": os.environ.get("LAVA_OFFER_PACK10_RU", ""), "en": os.environ.get("LAVA_OFFER_PACK10_EN", "")},
-    "pack15": {"ru": os.environ.get("LAVA_OFFER_PACK15_RU", ""), "en": os.environ.get("LAVA_OFFER_PACK15_EN", "")},
 }
 
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:8080")
@@ -79,13 +76,14 @@ DB_PATH = os.environ.get("DB_PATH", os.path.join(os.path.dirname(__file__), "app
 EMAIL_RE = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 
 # Packs are the source of truth for price/credits — never trust amounts from the client.
-# RUB prices as agreed; USD prices are a display default for the EN UI until a real
-# foreign-currency payment channel exists (see conversation notes) — YooKassa will
-# still charge the RUB amount even when the UI shows the EN/$ price.
+# These amount_rub/amount_usd figures are display-only (the /api/packs response,
+# and what the pricing tab on the site shows) — the actual charge amount comes
+# from the price configured on the matching Lava.top product/tariff itself
+# (LAVA_OFFERS), since create_lava_invoice() doesn't send an amount. Keep these
+# in sync by hand whenever the price is changed in the Lava.top dashboard.
 PACKS = {
-    "pack3":  {"credits": 3,  "amount_rub": 399,  "amount_usd": 5.99,  "label_ru": "3 разбора",  "label_en": "3 readings"},
-    "pack10": {"credits": 10, "amount_rub": 999,  "amount_usd": 11.99, "label_ru": "10 разборов", "label_en": "10 readings"},
-    "pack15": {"credits": 15, "amount_rub": 1399, "amount_usd": 15.99, "label_ru": "15 разборов", "label_en": "15 readings"},
+    "pack3":  {"credits": 3,  "amount_rub": 999,  "amount_usd": 14.99, "label_ru": "3 разбора",  "label_en": "3 readings"},
+    "pack10": {"credits": 10, "amount_rub": 2499, "amount_usd": 34.99, "label_ru": "10 разборов", "label_en": "10 readings"},
 }
 
 SESSION_COOKIE = "pf_session"
@@ -164,7 +162,7 @@ def on_startup():
     if not LAVA_API_KEY:
         print("WARNING: LAVA_API_KEY not set — payments (active provider) will fail.")
     if not all(LAVA_OFFERS[pack][lang] for pack in LAVA_OFFERS for lang in ("ru", "en")):
-        print("WARNING: one or more LAVA_OFFER_pack* ids are not set — create the 3 products in "
+        print("WARNING: one or more LAVA_OFFER_pack* ids are not set — create the 2 products in "
               "the Lava.top dashboard first and put their offerId here.")
     if not LAVA_WEBHOOK_SECRET:
         print("WARNING: LAVA_WEBHOOK_SECRET not set — the webhook endpoint will accept unauthenticated calls.")

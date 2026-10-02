@@ -95,12 +95,16 @@ with TestClient(main.app, base_url="https://testserver") as c:
 r = client.get("/api/packs?lang=ru")
 assert r.status_code == 200
 packs_ru = r.json()
-assert packs_ru["pack3"]["amount"] == 399 and packs_ru["pack3"]["currency"] == "RUB"
+assert packs_ru["pack3"]["amount"] == 999 and packs_ru["pack3"]["currency"] == "RUB"
+assert packs_ru["pack10"]["amount"] == 2499 and packs_ru["pack10"]["currency"] == "RUB"
+assert "pack15" not in packs_ru
 print("OK: RU packs ->", packs_ru)
 
 r = client.get("/api/packs?lang=en")
 packs_en = r.json()
-assert packs_en["pack3"]["amount"] == 5.99 and packs_en["pack3"]["currency"] == "USD"
+assert packs_en["pack3"]["amount"] == 14.99 and packs_en["pack3"]["currency"] == "USD"
+assert packs_en["pack10"]["amount"] == 34.99 and packs_en["pack10"]["currency"] == "USD"
+assert "pack15" not in packs_en
 print("OK: EN packs ->", packs_en)
 
 print("\nALL SMOKE TESTS PASSED")
