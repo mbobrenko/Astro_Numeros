@@ -15,10 +15,8 @@ os.environ["TELEGRAM_BOT_TOKEN"] = "123456:testtoken"
 os.environ["SESSION_SECRET"] = "testsecret"
 os.environ["LAVA_API_KEY"] = "test-lava-key"
 os.environ["LAVA_WEBHOOK_SECRET"] = "test-webhook-secret"
-os.environ["LAVA_OFFER_PACK3_RU"] = "offer-pack3-ru-uuid"
-os.environ["LAVA_OFFER_PACK3_EN"] = "offer-pack3-en-uuid"
-os.environ["LAVA_OFFER_PACK10_RU"] = "offer-pack10-ru-uuid"
-os.environ["LAVA_OFFER_PACK10_EN"] = "offer-pack10-en-uuid"
+os.environ["LAVA_OFFER_PACK3"] = "offer-pack3-uuid"
+os.environ["LAVA_OFFER_PACK10"] = "offer-pack10-uuid"
 os.environ["DB_PATH"] = "/tmp/test_pifagor_lava.db"
 
 if os.path.exists("/tmp/test_pifagor_lava.db"):
@@ -98,24 +96,24 @@ with client as c:
     assert r.status_code == 400, r.text
     print("OK: unknown pack rejected")
 
-    # RU purchase -> RUB currency, RU offerId, no paymentProvider override
+    # RU purchase -> RUB currency, shared pack10 offerId, no paymentProvider override
     r = c.post("/api/pay/create", json={"pack": "pack10", "lang": "ru", "email": "marina@example.com"})
     assert r.status_code == 200, r.text
     ru_url = r.json()["confirmation_url"]
     assert ru_url.startswith("https://lava.top/pay/")
     ru_req = invoice_requests[-1]
-    assert ru_req["offerId"] == "offer-pack10-ru-uuid", ru_req
+    assert ru_req["offerId"] == "offer-pack10-uuid", ru_req
     assert ru_req["currency"] == "RUB" and "paymentProvider" not in ru_req
-    print("OK: RU pack10 purchase created with the RU offerId ->", r.json())
+    print("OK: RU pack10 purchase created with the shared offerId ->", r.json())
 
-    # EN purchase -> USD currency + PayPal rail + the separate EN offerId
+    # EN purchase -> USD currency + PayPal rail, same offerId as RU
     r = c.post("/api/pay/create", json={"pack": "pack3", "lang": "en", "email": "marina@example.com"})
     assert r.status_code == 200, r.text
     en_url = r.json()["confirmation_url"]
     en_req = invoice_requests[-1]
-    assert en_req["offerId"] == "offer-pack3-en-uuid", en_req
+    assert en_req["offerId"] == "offer-pack3-uuid", en_req
     assert en_req["currency"] == "USD" and en_req["paymentProvider"] == "PAYPAL"
-    print("OK: EN pack3 purchase created with the separate EN offerId ->", r.json())
+    print("OK: EN pack3 purchase created with the same shared offerId ->", r.json())
 
     # balance still 0 (nothing paid yet)
     r = c.get("/api/me")

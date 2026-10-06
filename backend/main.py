@@ -8,14 +8,14 @@ the en UI, from one integration. The earlier YooKassa integration is kept
 in place but dormant (routes under /api/pay/yookassa/*, not called by the
 frontend) in case it's needed again later.
 
-NOTE on Lava.top field names: gate.lava.top's own docs pages returned 403s
-when this integration was written, so the exact request/response field names
-below are reconstructed from secondary sources (their public API overview,
-a third-party SDK's README, and a real integration's bugfix notes — see the
-comments near LAVA_API_BASE). Before relying on this in production, run
-lava_test_invoice.py once with real credentials and compare the raw response
-against what invoice-creation/webhook code below expects, and adjust field
-names if they differ.
+NOTE on Lava.top field names: confirmed 2026-10-06 against gate.lava.top's
+real OpenAPI spec (served at /docs/documentation.yaml) and a live test call
+(create + status-check) against a real product — see
+PR/commit history for the raw responses. One product can hold several
+"offers" (tariffs), each with its own offerId and multi-currency prices
+(RUB/USD/EUR) — there is no need for separate RU/EN products, one offerId
+per pack covers both languages; only the `currency`/`buyerLanguage` fields
+on the invoice-create call differ by language.
 
 Run locally for testing:
     pip install -r requirements.txt
@@ -23,10 +23,8 @@ Run locally for testing:
     export SESSION_SECRET=some-long-random-string
     export LAVA_API_KEY=...             # Lava.top dashboard -> Integrations -> API
     export LAVA_WEBHOOK_SECRET=...      # the webhook key you set in that same dashboard page
-    export LAVA_OFFER_PACK3_RU=...      # offerId (UUID) of the RU "3 readings" product in Lava.top
-    export LAVA_OFFER_PACK3_EN=...      # offerId (UUID) of the EN "3 readings" product in Lava.top
-    export LAVA_OFFER_PACK10_RU=...
-    export LAVA_OFFER_PACK10_EN=...
+    export LAVA_OFFER_PACK3=...         # offerId (UUID) of the "3 readings" tariff in Lava.top
+    export LAVA_OFFER_PACK10=...        # offerId (UUID) of the "10 readings" tariff in Lava.top
     export FRONTEND_URL=https://your-domain.example
     uvicorn main:app --host 0.0.0.0 --port 8000
 
@@ -64,11 +62,13 @@ LAVA_API_BASE = "https://gate.lava.top"
 LAVA_API_KEY = os.environ.get("LAVA_API_KEY", "")
 LAVA_WEBHOOK_SECRET = os.environ.get("LAVA_WEBHOOK_SECRET", "")
 
-# One Lava.top product (offer) per pack PER LANGUAGE — separate RU/EN cards,
-# each with its own cover/description/post-payment text in that language.
+# One Lava.top "offer" (tariff) per pack, shared by both languages — each
+# offer carries its own RUB/USD/EUR prices, so RU and EN buyers use the same
+# offerId and only the invoice's currency/buyerLanguage differ (see
+# create_lava_invoice below). Confirmed live 2026-10-06.
 LAVA_OFFERS = {
-    "pack3":  {"ru": os.environ.get("LAVA_OFFER_PACK3_RU", ""),  "en": os.environ.get("LAVA_OFFER_PACK3_EN", "")},
-    "pack10": {"ru": os.environ.get("LAVA_OFFER_PACK10_RU", ""), "en": os.environ.get("LAVA_OFFER_PACK10_EN", "")},
+    "pack3":  os.environ.get("LAVA_OFFER_PACK3", ""),
+    "pack10": os.environ.get("LAVA_OFFER_PACK10", ""),
 }
 
 FRONTEND_URL = os.environ.get("FRONTEND_URL", "http://localhost:8080")
@@ -161,8 +161,8 @@ def on_startup():
         print("WARNING: TELEGRAM_BOT_TOKEN not set — Telegram login will fail verification.")
     if not LAVA_API_KEY:
         print("WARNING: LAVA_API_KEY not set — payments (active provider) will fail.")
-    if not all(LAVA_OFFERS[pack][lang] for pack in LAVA_OFFERS for lang in ("ru", "en")):
-        print("WARNING: one or more LAVA_OFFER_pack* ids are not set — create the 2 products in "
+    if not all(LAVA_OFFERS.values()):
+        print("WARNING: one or more LAVA_OFFER_PACK* ids are not set — create the 2 tariffs in "
               "the Lava.top dashboard first and put their offerId here.")
     if not LAVA_WEBHOOK_SECRET:
         print("WARNING: LAVA_WEBHOOK_SECRET not set — the webhook endpoint will accept unauthenticated calls.")
@@ -325,12 +325,11 @@ class PayCreateRequest(BaseModel):
 # ---------------------------------------------------------------------------
 # Lava.top — active payment provider for both audiences.
 #
-# One "offer" (product) per pack is created once in the Lava.top dashboard
-# (Integrations -> Products), and we invoice against its offerId with the
-# currency/rail picked by language: RUB for ru, USD via Lava's PayPal rail
-# for en. See the module docstring for the caveat about unverified field
-# names — LAVA_FIELD_* below are the single place to adjust them if a real
-# test call (lava_test_invoice.py) shows a different shape.
+# One product in the Lava.top dashboard holds both tariffs ("3 readings" /
+# "10 readings") as nested offers; each offer has one offerId good for both
+# languages, with RUB/USD/EUR prices attached to it directly in the
+# dashboard. We invoice against that offerId with the currency/rail picked
+# by language: RUB for ru, USD via Lava's PayPal rail for en.
 # ---------------------------------------------------------------------------
 
 def _lava_headers():
@@ -339,9 +338,9 @@ def _lava_headers():
 
 def create_lava_invoice(pack_key: str, pack: dict, email: str, lang: str, telegram_id: int, payment_id: str) -> dict:
     is_en = lang == "en"
-    offer_id = LAVA_OFFERS.get(pack_key, {}).get("en" if is_en else "ru")
+    offer_id = LAVA_OFFERS.get(pack_key)
     if not offer_id:
-        raise HTTPException(status_code=500, detail=f"lava_offer_not_configured: {pack_key}/{lang}")
+        raise HTTPException(status_code=500, detail=f"lava_offer_not_configured: {pack_key}")
 
     req_body = {
         "email": email,
