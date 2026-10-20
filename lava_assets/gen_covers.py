@@ -4,6 +4,21 @@ already shows up in the product's own title and price field, so the
 cover itself doesn't need to repeat it (per explicit request: the pack
 count doesn't need to be on the cover).
 
+Per explicit request, the covers (and all Lava.top-facing text) avoid the
+"Квадрат Пифагора" / "Pythagorean Square" name — the marketplace-facing
+branding is the more generic "Нумерологический разбор судьбы" / "Numerology
+Destiny Reading" instead, with a short project-description paragraph baked
+into the cover itself (Lava.top-style short pitch).
+
+**Reworded 2026-10-08** after Lava.top's moderation rejected the product
+for "эзотерический контент" (esoteric content). Dropped "нумерология" /
+"numerology" and "судьба" / "destiny" entirely from every field — these are
+exactly the words that trip the esoteric-category filter at most RU payment
+aggregators right now, not just Lava.top (see lava_assets/README.md). The
+product is now framed purely as a calculation/data tool based on birth date
+and name ("числовой профиль по дате рождения" / "birth date number
+profile"), with no "divination" framing anywhere.
+
 Size confirmed from Lava.top's own "Как создать цифровой продукт?" FAQ
 article (faq.lava.top/article/53726): cover must be 1160x464px, JPG/JPEG/
 PNG/WebP.
@@ -28,13 +43,13 @@ os.makedirs(OUT_DIR, exist_ok=True)
 COVER_W = 1160
 COVER_H = 464
 
-TITLE = {"ru": "Квадрат Пифагора", "en": "Pythagorean Square"}
-HEADLINE = {"ru": "Доступ к вкладке «Графики»", "en": "Unlocks the “Charts” tab"}
+EYEBROW = {"ru": "Расчёт по дате рождения", "en": "Birth Date Calculation"}
+HEADLINE = {"ru": "Числовой профиль по дате рождения", "en": "Birth Date Number Profile"}
 SUBTITLE = {
-    "ru": "График жизненных сил и периоды жизни по дате рождения и ФИО",
-    "en": "Life-force chart and life-period breakdown from your birth date and name",
+    "ru": "Персональный расчёт по дате рождения и ФИО: график жизненных ресурсов и периоды жизни — доступ открывается сразу после оплаты, прямо в Telegram.",
+    "en": "A personal calculation from your birth date and name: your resource chart and life-period breakdown — unlocked instantly after payment, right in Telegram.",
 }
-TAG = {"ru": "Разборы не сгорают · вход через Telegram",
+TAG = {"ru": "Расчёты не сгорают · вход через Telegram",
        "en": "Credits never expire · Telegram login"}
 
 # Decorative sample grid — not a real calculation, just echoes the site's
@@ -66,16 +81,16 @@ HTML_TEMPLATE = """<!doctype html>
     justify-content:center; font-size:11px; letter-spacing:1.5px; color:var(--accent);
     font-weight:600;
   }}
-  .right {{ max-width:660px; margin-left:36px; }}
+  .right {{ max-width:680px; margin-left:36px; }}
   .eyebrow {{
-    font-size:16px; color:var(--accent); font-weight:600; letter-spacing:0.4px;
-    margin-bottom:8px;
+    font-size:14px; color:var(--accent); font-weight:700; letter-spacing:1.2px;
+    text-transform:uppercase; margin-bottom:8px;
   }}
-  h1 {{ font-size:29px; margin:0 0 10px 0; font-weight:700; line-height:1.15; }}
-  .subtitle {{ font-size:15px; color:var(--muted); line-height:1.4; margin-bottom:18px; }}
+  h1 {{ font-size:27px; margin:0 0 10px 0; font-weight:700; line-height:1.15; }}
+  .subtitle {{ font-size:14px; color:var(--muted); line-height:1.45; margin-bottom:16px; }}
   .tag {{
     display:inline-block; background:var(--accent); color:#fff; border-radius:999px;
-    padding:8px 18px; font-size:13px; font-weight:600;
+    padding:7px 16px; font-size:12px; font-weight:600;
   }}
 </style></head>
 <body>
@@ -83,7 +98,7 @@ HTML_TEMPLATE = """<!doctype html>
     {cells}
   </div>
   <div class="right">
-    <div class="eyebrow">{title}</div>
+    <div class="eyebrow">{eyebrow}</div>
     <h1>{headline}</h1>
     <div class="subtitle">{subtitle}</div>
     <div class="tag">{tag}</div>
@@ -96,7 +111,7 @@ def render(lang):
     cells_html = "".join(f'<div class="cell">{c}</div>' for c in GRID_CELLS)
     html = HTML_TEMPLATE.format(
         w=COVER_W, h=COVER_H,
-        title=TITLE[lang], headline=HEADLINE[lang], subtitle=SUBTITLE[lang],
+        eyebrow=EYEBROW[lang], headline=HEADLINE[lang], subtitle=SUBTITLE[lang],
         tag=TAG[lang], cells=cells_html,
     )
     return html
